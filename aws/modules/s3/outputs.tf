@@ -12,3 +12,7 @@ output "website_domain" {
   description = "Website endpoint"
   value       = aws_s3_bucket_website_configuration.site.website_domain
 }
+
+output "tags" {
+  value = aws_s3_bucket.site.tags
+}

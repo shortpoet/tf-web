@@ -4,11 +4,13 @@ terraform {
 locals {
   zone_name       = "marshmallowmeat.com"
   site_domain     = "marshmallowmeat.com"
-  site_domain_dev = "dev.${local.site_domain}}"
+  site_domain_dev = "dev.${local.site_domain}"
 
   tags = {
-    Terraform = "true"
-    Project   = "tf-web"
+    Terraform       = "true"
+    Project         = "tf-web"
+    CloudFlare      = "true"
+    CloudFlare_Zone = local.zone_name
   }
 
 }
