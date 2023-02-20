@@ -2,8 +2,6 @@
 name: "Terraform Plan"
 on:
   workflow_call:
-    paths:
-      - ${{ github.event.inputs.path }}
     inputs:
       path:
         description: 'Specifies the path of the root terraform module.'
@@ -58,7 +56,7 @@ jobs:
       # TF_VAR_client_secret: ${{ secrets.arm_client_secret }}
       # TF_VAR_subscription_id: ${{ secrets.arm_subscription_id }}
       # TF_VAR_tenant_id: ${{ secrets.arm_tenant_id }}
-      TF_VARS: ${{ inputs.tf_vars_file }}
+      # TF_VARS: ${{ inputs.tf_vars_file }}
       # STORAGE_ACCOUNT: ${{ secrets.storage_account }}
       # CONTAINER_NAME: ${{ secrets.container_name }}
       # RESOURCE_GROUP: ${{ secrets.resource_group }}
