@@ -31,7 +31,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: dump context
-        uses: shortpoet/tf-web/.github/workflows/dump-context.yml@main
+        # reusable workflows should be referenced at the top-level `jobs.*.uses' key, not within steps
+        # uses: shortpoet/tf-web/.github/workflows/dump-context.yml@main
+        uses: shortpoet/tf-web/.github/actions/dump-context@main
       - name: echo changed files
         run: |
           echo ${{needs.changed-files.outputs.all}}
