@@ -30,6 +30,10 @@ on:
         required: false
         type: boolean
         default: false
+      # GITHUB_TOKEN:
+      #   description: 'The secrets.GITHUB_TOKEN so that the action can create a comment on the PR'
+      #   required: true
+      #   type: string
     # secrets:
     #   arm_client_id:
     #     description: 'Specifies the Azure ARM CLIENT ID.'
@@ -134,7 +138,7 @@ jobs:
         uses: actions/github-script@v6
         # if: github.event_name == 'pull_request'
         with:
-          # github-token: ${{ inputs.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require("fs");
             const plan = fs.readFileSync("/tmp/plan.txt", "utf8");
@@ -179,7 +183,7 @@ jobs:
         env:
           PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
         with:
-          # github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
               const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
               #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
