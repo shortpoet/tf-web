@@ -134,9 +134,9 @@ jobs:
         shell: bash
 
       - name: Terraform Plan Output
-        if: always()
+        # if: always()
         uses: actions/github-script@v6
-        # if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -179,7 +179,7 @@ jobs:
         id: comment
         uses: actions/github-script@v6
         # uses: actions/github-script@v3
-        # if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request'
         env:
           PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
         with:

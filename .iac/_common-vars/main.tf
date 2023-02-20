@@ -5,7 +5,9 @@ locals {
 
   zone_name       = "marshmallowmeat.com"
   site_domain     = "marshmallowmeat.com"
+  subdomain_uat   = "uat"
   subdomain_dev   = "dev"
+  site_domain_uat = "${local.subdomain_uat}.${local.site_domain}"
   site_domain_dev = "${local.subdomain_dev}.${local.site_domain}"
 
   tags = {
@@ -19,6 +21,14 @@ locals {
 
 output "site_domain" {
   value = local.site_domain
+}
+
+output "site_domain_uat" {
+  value = local.site_domain_uat
+}
+
+output "subdomain_uat" {
+  value = local.subdomain_uat
 }
 
 output "subdomain_dev" {
