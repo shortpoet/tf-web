@@ -15,9 +15,9 @@ jobs:
         id: changes
         # Set outputs using the command.
         run: |
-          echo "::set-output name=all::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | xargs)"
-          echo "::set-output name=tf::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep .tf$ | xargs)"
-          echo "::set-output name=yml::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep .yml$ | xargs)"
+          echo "::set-output name=all::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.commit.base.sha }} ${{ github.sha }} | xargs)"
+          echo "::set-output name=tf::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.commit.base.sha }} ${{ github.sha }} | grep .tf$ | xargs)"
+          echo "::set-output name=yml::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.commit.base.sha }} ${{ github.sha }} | grep .yml$ | xargs)"
   lint:
     runs-on: ubuntu-latest
     # require the first job to have ran
