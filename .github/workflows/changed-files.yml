@@ -4,13 +4,13 @@ on:
     outputs:
       all:
         description: 'List of changed files'
-        value: ${{ jobs.changed-files.outputs.changes.outputs.all }}
+        value: ${{ jobs.changed-files.outputs.all }}
       tf:
         description: 'List of changed Terraform files'
-        value: ${{ jobs.changed-files.outputs.changes.outputs.tf }}
+        value: ${{ jobs.changed-files.outputs.tf }}
       yml:
         description: 'List of changed YAML files'
-        value: ${{ jobs.changed-files.outputs.changes.outputs.yml }}
+        value: ${{ jobs.changed-files.outputs.yml }}
 
 jobs:
   changed-files:
@@ -38,15 +38,15 @@ jobs:
           echo "::save-state name=all::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.after }} ${{ github.event.before }} | xargs)"
           echo "::save-state name=tf::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.after }} ${{ github.event.before }} | grep .tf$ | xargs)"
           echo "::save-state name=yml::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.after }} ${{ github.event.before }} | grep .yml$ | xargs)"
-  # lint:
-  #   runs-on: ubuntu-latest
-  #   # require the first job to have ran
-  #   needs: changed-files
-  #   # only run there are changed files
-  #   if: ${{needs.changed-files.outputs.tf != ''}} || ${{needs.changed-files.outputs.yml != ''}}
-  #   steps:
-  #     - name: echo changed files
-  #       run: |
-  #         echo ${{needs.changed-files.outputs.all}}
-  #         echo ${{needs.changed-files.outputs.tf}}
-  #         echo ${{needs.changed-files.outputs.yml}}
+  lint:
+    runs-on: ubuntu-latest
+    # require the first job to have ran
+    needs: changed-files
+    # only run there are changed files
+    if: ${{needs.changed-files.outputs.tf != ''}} || ${{needs.changed-files.outputs.yml != ''}}
+    steps:
+      - name: echo changed files
+        run: |
+          echo ${{needs.changed-files.outputs.all}}
+          echo ${{needs.changed-files.outputs.tf}}
+          echo ${{needs.changed-files.outputs.yml}}
