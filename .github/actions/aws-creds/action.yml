@@ -18,6 +18,10 @@ inputs:
     description: 'AWS role duration in seconds'
     required: true
     default: '1200'
+  aws-profle:
+    description: 'AWS profile'
+    required: true
+    default: 'default'
 
 runs:
   using: 'composite'
@@ -35,7 +39,7 @@ runs:
       shell: bash
       id: profile
       run: |
-        profile=${{ vars.AWS_PROFILE }}
+        profile=${{ inputs.aws-profle }}
         aws configure --profile "$profile" set "profile.${profile}.aws_access_key_id" ${{ env.AWS_ACCESS_KEY_ID }}
         aws configure --profile "$profile" set "profile.${profile}.aws_secret_access_key" ${{ env.AWS_SECRET_ACCESS_KEY }}
         aws configure --profile "$profile" set "profile.${profile}.aws_session_token" ${{ env.AWS_SESSION_TOKEN }}

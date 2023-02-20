@@ -73,6 +73,7 @@ jobs:
         if: ${{ inputs.provider == 'aws' }}
         uses: ./.github/actions/aws-creds
         with:
+          aws-profile: ${{ vars.AWS_PROFILE }}
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ vars.AWS_DEFAULT_REGION }}
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
