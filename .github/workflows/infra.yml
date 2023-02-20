@@ -55,17 +55,17 @@ jobs:
       gh_environment: 'dev'
       path: '.iac/aws/envs/dev/infra'
 
-  build-plan-staging:
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'staging'
+  build-plan-uat:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'uat'
     uses: shortpoet/tf-web/.github/workflows/plan.yml@main
     with:
-      gh_environment: 'staging'
-      path: '.iac/aws/envs/staging/infra'
+      gh_environment: 'uat'
+      path: '.iac/aws/envs/uat/infra'
 
   build-plan-prod:
     if: github.ref == 'refs/heads/main'
-    needs : [build-plan-staging]
-    # needs : [build-plan-dev, build-plan-staging]
+    needs : [build-plan-uat]
+    # needs : [build-plan-dev, build-plan-uat]
     uses: shortpoet/tf-web/.github/workflows/plan.yml@main
     with:
       gh_environment: 'prod'
