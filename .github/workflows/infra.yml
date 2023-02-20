@@ -9,6 +9,7 @@ on:
     paths:
       - '.iac/**'
       - '.github/workflows/infra.yml'
+      - '.github/.templates/plan.yml'
 
 jobs:
   dump-context:
@@ -19,5 +20,18 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
 
+  changed-files:
+    uses: shortpoet/tf-web/.github/.templates/changed-files.yml@main
+  debug-changed-files:
+    needs: changed-files
+    runs-on: ubuntu-latest
+    steps:
+      - name: echo changed files
+        run: |
+          echo ${{needs.changed-files.outputs.all}}
+          echo ${{needs.changed-files.outputs.tf}}
+          echo ${{needs.changed-files.outputs.yml}}
+    # with:
+    #   path: '.iac'
   # build-plan:
   #   uses: shortpoet/tf-web/.github/.templates/plan.yml@main
