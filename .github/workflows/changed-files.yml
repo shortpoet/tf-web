@@ -1,6 +1,16 @@
 ---
 on:
   workflow_call:
+    outputs:
+      changed_files:
+        description: 'List of changed files'
+        value: ${{ steps.changed-files.outputs.all }}
+      changed_tf_files:
+        description: 'List of changed Terraform files'
+        value: ${{ steps.changed-files.outputs.tf }}
+      changed_yml_files:
+        description: 'List of changed YAML files'
+        value: ${{ steps.changed-files.outputs.yml }}
 
 jobs:
   changedfiles:
@@ -15,7 +25,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0
+          fetch-depth: 2
+          # fetch-depth: 0
       - name: Get changed files
         id: changes
         # Set outputs using the command.
