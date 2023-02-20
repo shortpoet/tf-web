@@ -12,6 +12,7 @@ on:
       - '.github/workflows/changed-files.yml'
       - '.github/.templates/plan.yml'
       - '.github/actions/dump-context/action.yml'
+      - '.github/actions/changed-files/action.yml'
 
 jobs:
   dump-context:
