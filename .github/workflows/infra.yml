@@ -40,7 +40,7 @@ jobs:
           echo $${{ toJson(needs.changed-files) }}
           echo ${{ needs.changed-files.outputs.all }}
           echo ${{ needs.changed-files.outputs.tf }}
-          echo ${ {needs.changed-files.outputs.yml }}
+          echo ${{ needs.changed-files.outputs.yml }}
     # with:
     #   path: '.iac'
   # build-plan:
