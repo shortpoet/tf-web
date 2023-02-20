@@ -9,6 +9,7 @@ on:
     paths:
       - '.iac/**'
       - '.github/workflows/infra.yml'
+      - '.github/workflows/changed-files.yml'
       - '.github/.templates/plan.yml'
 
 jobs:
