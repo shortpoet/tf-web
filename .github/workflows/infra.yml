@@ -10,9 +10,10 @@ on:
       - '.iac/**'
       - '.github/workflows/infra.yml'
       - '.github/workflows/changed-files.yml'
-      - '.github/.templates/plan.yml'
+      - '.github/.workflows/plan.yml'
       - '.github/actions/dump-context/action.yml'
       - '.github/actions/changed-files/action.yml'
+      - '.github/actions/aws-creds/action.yml'
 
 jobs:
   # dump-context:
