@@ -49,7 +49,7 @@ jobs:
           echo ${{ steps.dump-changed-files.outputs.tf }}
           echo ${{ steps.dump-changed-files.outputs.yml }}
   build-plan:
-    uses: shortpoet/tf-web/.github/.templates/plan.yml@main
+    uses: shortpoet/tf-web/.github/workflows/plan.yml@main
     with:
       gh_environment: 'dev'
       path: '.iac/dev'
