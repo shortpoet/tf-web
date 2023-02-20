@@ -50,7 +50,7 @@ jobs:
 
   aws-plan-dev:
     if: github.ref == 'refs/heads/develop'
-    uses: shortpoet/tf-web/.github/workflows/plan.yml@main
+    uses: shortpoet/tf-web/.github/workflows/plan.yml
     with:
       provider: 'aws'
       gh_environment: 'dev'
@@ -58,7 +58,7 @@ jobs:
 
   aws-plan-uat:
     if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'uat'
-    uses: shortpoet/tf-web/.github/workflows/plan.yml@main
+    uses: shortpoet/tf-web/.github/workflows/plan.yml
     with:
       provider: 'aws'
       gh_environment: 'uat'
@@ -68,7 +68,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     needs : [aws-plan-uat]
     # needs : [aws-plan-dev, aws-plan-uat]
-    uses: shortpoet/tf-web/.github/workflows/plan.yml@main
+    uses: shortpoet/tf-web/.github/workflows/plan.yml
     with:
       provider: 'aws'
       gh_environment: 'prod'
