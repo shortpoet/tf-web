@@ -2,7 +2,6 @@
 name: "Terraform Plan"
 on:
   workflow_call:
-    secrets: inherit
     inputs:
       provider:
         description: 'Specifies the cloud provider.'
