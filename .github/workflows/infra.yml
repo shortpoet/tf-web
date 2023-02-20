@@ -15,41 +15,58 @@ on:
       - '.github/actions/changed-files/action.yml'
 
 jobs:
-  dump-context:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
+  # dump-context:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Dump GitHub context
+  #       env:
+  #         GITHUB_CONTEXT: ${{ toJson(github) }}
+  #       run: echo "$GITHUB_CONTEXT"
 
+  # changed-files:
+  #   uses: shortpoet/tf-web/.github/workflows/changed-files.yml@main
 
-  changed-files:
-    uses: shortpoet/tf-web/.github/workflows/changed-files.yml@main
+  # debug-changed-files:
+  #   needs: changed-files
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     # - name: dump context
+  #     #   # reusable workflows should be referenced at the top-level `jobs.*.uses' key, not within steps
+  #     #   # uses: shortpoet/tf-web/.github/workflows/dump-context.yml@main
+  #     #   uses: shortpoet/tf-web/.github/actions/dump-context@main
+  #     - name: dump changed files
+  #       uses: shortpoet/tf-web/.github/actions/changed-files@main
+  #       id: dump-changed-files
+  #     - name: echo changed files needs
+  #       run: |
+  #         echo ${{ needs.changed-files.outputs.all }}
+  #         echo ${{ needs.changed-files.outputs.tf }}
+  #         echo ${{ needs.changed-files.outputs.yml }}
+  #     - name: echo changed files steps
+  #       run: |
+  #         echo ${{ steps.dump-changed-files.outputs.all }}
+  #         echo ${{ steps.dump-changed-files.outputs.tf }}
+  #         echo ${{ steps.dump-changed-files.outputs.yml }}
 
-  debug-changed-files:
-    needs: changed-files
-    runs-on: ubuntu-latest
-    steps:
-      # - name: dump context
-      #   # reusable workflows should be referenced at the top-level `jobs.*.uses' key, not within steps
-      #   # uses: shortpoet/tf-web/.github/workflows/dump-context.yml@main
-      #   uses: shortpoet/tf-web/.github/actions/dump-context@main
-      - name: dump changed files
-        uses: shortpoet/tf-web/.github/actions/changed-files@main
-        id: dump-changed-files
-      - name: echo changed files needs
-        run: |
-          echo ${{ needs.changed-files.outputs.all }}
-          echo ${{ needs.changed-files.outputs.tf }}
-          echo ${{ needs.changed-files.outputs.yml }}
-      - name: echo changed files steps
-        run: |
-          echo ${{ steps.dump-changed-files.outputs.all }}
-          echo ${{ steps.dump-changed-files.outputs.tf }}
-          echo ${{ steps.dump-changed-files.outputs.yml }}
-  build-plan:
+  build-plan-dev:
+    if: github.ref == 'refs/heads/develop'
     uses: shortpoet/tf-web/.github/workflows/plan.yml@main
     with:
       gh_environment: 'dev'
-      path: '.iac/aws/infra/dev'
+      path: '.iac/aws/envs/dev/infra'
+
+  build-plan-staging:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'staging'
+    uses: shortpoet/tf-web/.github/workflows/plan.yml@main
+    with:
+      gh_environment: 'staging'
+      path: '.iac/aws/envs/staging/infra'
+
+  build-plan-prod:
+    if: github.ref == 'refs/heads/main'
+    needs : [build-plan-staging]
+    # needs : [build-plan-dev, build-plan-staging]
+    uses: shortpoet/tf-web/.github/workflows/plan.yml@main
+    with:
+      gh_environment: 'prod'
+      path: '.iac/aws/envs/prod/infra'
