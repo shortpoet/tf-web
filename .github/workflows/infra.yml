@@ -37,7 +37,7 @@ jobs:
       - name: echo changed files
         run: |
           echo ${{ toJson(github) }}
-          echo $${{ needs.changed-files }}
+          echo $${{ toJson(needs.changed-files) }}
           echo ${{ needs.changed-files.outputs.all }}
           echo ${{ needs.changed-files.outputs.tf }}
           echo ${ {needs.changed-files.outputs.yml }}
