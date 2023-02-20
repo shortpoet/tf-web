@@ -17,7 +17,7 @@ inputs:
   role-duration-seconds:
     description: 'AWS role duration in seconds'
     required: true
-    default: '1200'
+    default: 1200
   aws-profile:
     description: 'AWS profile'
     required: true
