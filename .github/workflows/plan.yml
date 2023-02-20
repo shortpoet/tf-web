@@ -2,6 +2,8 @@
 name: "Terraform Plan"
 on:
   workflow_call:
+    paths:
+      - ${{ github.event.inputs.path }}
     inputs:
       path:
         description: 'Specifies the path of the root terraform module.'
@@ -49,17 +51,18 @@ jobs:
         shell: bash
         working-directory: ${{ inputs.path }}
     env:
-      STORAGE_ACCOUNT: ${{ inputs.az_storage_acc }}
-      CONTAINER_NAME: ${{ inputs.az_container_name }}
-      RESOURCE_GROUP: ${{ inputs.az_resource_group }}
-      TF_KEY: ${{ inputs.tf_key }}.tfstate
+      TF_LOG: TRACE
+      TF_LOG_PATH: tf.log
+      TF_IN_AUTOMATION: true
+      # TF_VAR_client_id: ${{ secrets.arm_client_id }}
+      # TF_VAR_client_secret: ${{ secrets.arm_client_secret }}
+      # TF_VAR_subscription_id: ${{ secrets.arm_subscription_id }}
+      # TF_VAR_tenant_id: ${{ secrets.arm_tenant_id }}
       TF_VARS: ${{ inputs.tf_vars_file }}
-      ###AZURE Client details###
-      ARM_CLIENT_ID: ${{ secrets.arm_client_id }}
-      ARM_CLIENT_SECRET: ${{ secrets.arm_client_secret }}
-      ARM_SUBSCRIPTION_ID: ${{ secrets.arm_subscription_id }}
-      ARM_TENANT_ID: ${{ secrets.arm_tenant_id }}
-
+      # STORAGE_ACCOUNT: ${{ secrets.storage_account }}
+      # CONTAINER_NAME: ${{ secrets.container_name }}
+      # RESOURCE_GROUP: ${{ secrets.resource_group }}
+      # TF_KEY: ${{ secrets.tf_key }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3.3.0

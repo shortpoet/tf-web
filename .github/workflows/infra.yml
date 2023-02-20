@@ -48,7 +48,10 @@ jobs:
           echo ${{ steps.dump-changed-files.outputs.all }}
           echo ${{ steps.dump-changed-files.outputs.tf }}
           echo ${{ steps.dump-changed-files.outputs.yml }}
-    # with:
-    #   path: '.iac'
-  # build-plan:
-  #   uses: shortpoet/tf-web/.github/.templates/plan.yml@main
+  build-plan:
+    uses: shortpoet/tf-web/.github/.templates/plan.yml@main
+    with:
+      gh_environment: 'dev'
+      path: '.iac/dev'
+      tf_vars_file: '.iac/dev/dev.tfvars'
+      tf_version: '1.0.0'
