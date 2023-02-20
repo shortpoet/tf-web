@@ -43,7 +43,9 @@ jobs:
     # require the first job to have ran
     needs: changed-files
     # only run there are changed files
-    if: ${{needs.changed-files.outputs.tf != ''}} || ${{needs.changed-files.outputs.yml != ''}}
+    if: |
+      ${{ needs.changed-files.outputs.tf != '' }} ||
+      ${{ needs.changed-files.outputs.yml != '' }}
     steps:
       - name: echo changed files
         run: |
