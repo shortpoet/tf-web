@@ -34,11 +34,19 @@ jobs:
       #   # reusable workflows should be referenced at the top-level `jobs.*.uses' key, not within steps
       #   # uses: shortpoet/tf-web/.github/workflows/dump-context.yml@main
       #   uses: shortpoet/tf-web/.github/actions/dump-context@main
-      - name: echo changed files
+      - name: dump changed files
+        uses: shortpoet/tf-web/.github/actions/changed-files@main
+        id: dump-changed-files
+      - name: echo changed files needs
         run: |
           echo ${{ needs.changed-files.outputs.all }}
           echo ${{ needs.changed-files.outputs.tf }}
           echo ${{ needs.changed-files.outputs.yml }}
+      - name: echo changed files steps
+        run: |
+          echo ${{ steps.dump-changed-files.outputs.all }}
+          echo ${{ steps.dump-changed-files.outputs.tf }}
+          echo ${{ steps.dump-changed-files.outputs.yml }}
     # with:
     #   path: '.iac'
   # build-plan:
