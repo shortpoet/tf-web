@@ -2,13 +2,13 @@
 on:
   workflow_call:
     outputs:
-      changed_files:
+      all:
         description: 'List of changed files'
         value: ${{ jobs.changed-files.outputs.changes.outputs.all }}
-      changed_tf_files:
+      tf:
         description: 'List of changed Terraform files'
         value: ${{ jobs.changed-files.outputs.changes.outputs.tf }}
-      changed_yml_files:
+      yml:
         description: 'List of changed YAML files'
         value: ${{ jobs.changed-files.outputs.changes.outputs.yml }}
 
@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     # Map a step output to a job output
     outputs:
-      all: ${{ steps.changes.outputs.all}}
+      all: ${{ steps.changes.outputs.all }}
       tf: ${{ steps.changes.outputs.tf }}
       yml: ${{ steps.changes.outputs.yml }}
     steps:
