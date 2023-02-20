@@ -3,6 +3,10 @@ name: "Terraform Plan"
 on:
   workflow_call:
     inputs:
+      provider:
+        description: 'Specifies the cloud provider.'
+        required: true
+        type: string
       path:
         description: 'Specifies the path of the root terraform module.'
         required: true
@@ -64,6 +68,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3.3.0
+
+      - name: AWS Credentials
+        if: ${{ inputs.provider == 'aws' }}
+        uses: ./.github/actions/aws-creds
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.AWS_DEFAULT_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-duration-seconds: 1200
 
       - name: Scan IaC - tfsec
         if: ${{ inputs.ENABLE_TFSEC == 'true' }}
