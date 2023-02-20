@@ -36,9 +36,11 @@ jobs:
         uses: shortpoet/tf-web/.github/actions/dump-context@main
       - name: echo changed files
         run: |
-          echo ${{needs.changed-files.outputs.all}}
-          echo ${{needs.changed-files.outputs.tf}}
-          echo ${{needs.changed-files.outputs.yml}}
+          echo ${{ toJson(github) }}
+          echo $${{ needs.changed-files }}
+          echo ${{ needs.changed-files.outputs.all }}
+          echo ${{ needs.changed-files.outputs.tf }}
+          echo ${ {needs.changed-files.outputs.yml }}
     # with:
     #   path: '.iac'
   # build-plan:
