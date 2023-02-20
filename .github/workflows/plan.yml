@@ -52,6 +52,9 @@ jobs:
       run:
         shell: bash
         working-directory: ${{ inputs.path }}
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       TF_LOG: TRACE
       TF_LOG_PATH: tf.log
