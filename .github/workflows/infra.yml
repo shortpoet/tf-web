@@ -1,0 +1,23 @@
+---
+name: Infra
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - '.iac/**'
+      - '.github/workflows/infra.yml'
+
+jobs:
+  dump-context:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+
+  # build-plan:
+  #   uses: shortpoet/tf-web/.github/.templates/plan.yml@main
