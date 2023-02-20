@@ -37,7 +37,7 @@ jobs:
         run: |
           echo "all=$(git diff --name-only --diff-filter=ACMRT ${{ github.event.after }} ${{ github.event.before }} | xargs)" >> $GITHUB_OUTPUT
           echo "tf=$(git diff --name-only --diff-filter=ACMRT ${{ github.event.after }} ${{ github.event.before }} | grep .tf$ | xargs)" >> $GITHUB_OUTPUT
-          echo "yml={$(git diff --name-only --diff-filter=ACMRT ${{ github.event.after }} ${{ github.event.before }} | grep .yml$ | xargs)" >> $GITHUB_OUTPUT
+          echo "yml=$(git diff --name-only --diff-filter=ACMRT ${{ github.event.after }} ${{ github.event.before }} | grep .yml$ | xargs)" >> $GITHUB_OUTPUT
   lint:
     runs-on: ubuntu-latest
     # require the first job to have ran
