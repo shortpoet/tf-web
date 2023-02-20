@@ -4,16 +4,16 @@ on:
     outputs:
       changed_files:
         description: 'List of changed files'
-        value: ${{ steps.changed-files.outputs.all }}
+        value: ${{ jobs.changed-files.outputs.changes.outputs.all }}
       changed_tf_files:
         description: 'List of changed Terraform files'
-        value: ${{ steps.changed-files.outputs.tf }}
+        value: ${{ jobs.changed-files.outputs.changes.outputs.tf }}
       changed_yml_files:
         description: 'List of changed YAML files'
-        value: ${{ steps.changed-files.outputs.yml }}
+        value: ${{ jobs.changed-files.outputs.changes.outputs.yml }}
 
 jobs:
-  changedfiles:
+  changed-files:
     runs-on: ubuntu-latest
     # Map a step output to a job output
     outputs:
@@ -41,12 +41,12 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     # require the first job to have ran
-    needs: changedfiles
+    needs: changed-files
     # only run there are changed files
-    if: ${{needs.changedfiles.outputs.tf != ''}} || ${{needs.changedfiles.outputs.yml != ''}}
+    if: ${{needs.changed-files.outputs.tf != ''}} || ${{needs.changed-files.outputs.yml != ''}}
     steps:
       - name: echo changed files
         run: |
-          echo ${{needs.changedfiles.outputs.all}}
-          echo ${{needs.changedfiles.outputs.tf}}
-          echo ${{needs.changedfiles.outputs.yml}}
+          echo ${{needs.changed-files.outputs.all}}
+          echo ${{needs.changed-files.outputs.tf}}
+          echo ${{needs.changed-files.outputs.yml}}
