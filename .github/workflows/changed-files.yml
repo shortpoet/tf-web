@@ -47,6 +47,6 @@ jobs:
     steps:
       - name: echo changed files
         run: |
-          echo ${{needs.changed-files.outputs.all}}
-          echo ${{needs.changed-files.outputs.tf}}
-          echo ${{needs.changed-files.outputs.yml}}
+          echo ${{ needs.changed-files.outputs.all }}
+          echo ${{ needs.changed-files.outputs.tf }}
+          echo ${{ needs.changed-files.outputs.yml }}
