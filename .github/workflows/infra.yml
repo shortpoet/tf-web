@@ -63,7 +63,7 @@ jobs:
     steps:
       - name: Debug tag
         run: |
-          echo ${{ steps.check-tag.outputs.has_tag }}
+          echo ${{ needs.check-tag.outputs.has_tag }}
 
   # aws-plan-dev:
   #   if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
