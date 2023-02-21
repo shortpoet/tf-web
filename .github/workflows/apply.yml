@@ -73,10 +73,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           role-duration-seconds: 1200
 
-      - name: debug pwd
-        run: |
-          pwd
-          ls -la
+      # - name: debug pwd
+      #   run: |
+      #     pwd
+      #     ls -la
 
       - name: Download Artifact
         uses: actions/download-artifact@v3.0.2
