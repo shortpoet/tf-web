@@ -116,7 +116,8 @@ jobs:
 
       - name: Terraform Init
         id: init
-        run: terraform init -lockfile=readonly -input=false
+        run: terraform init -input=false
+        # run: terraform init -lockfile=readonly -input=false
         # run: terraform init --backend-config="storage_account_name=$STORAGE_ACCOUNT" --backend-config="container_name=$CONTAINER_NAME" --backend-config="resource_group_name=$RESOURCE_GROUP" --backend-config="key=$TF_KEY"
 
       - name: Terraform Validate
