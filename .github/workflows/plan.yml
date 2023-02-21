@@ -116,7 +116,7 @@ jobs:
 
       - name: Terraform Init
         id: init
-        run: terraform init
+        run: terraform init -lockfile=readonly -input=false
         # run: terraform init --backend-config="storage_account_name=$STORAGE_ACCOUNT" --backend-config="container_name=$CONTAINER_NAME" --backend-config="resource_group_name=$RESOURCE_GROUP" --backend-config="key=$TF_KEY"
 
       - name: Terraform Validate
@@ -215,7 +215,8 @@ jobs:
         run: exit 1
 
       - name: Compress TF Plan artifact
-        run: zip -r ${{ inputs.gh_environment }}.zip ./*
+        run: zip -r ${{ inputs.gh_environment }}.zip plan.tfplan .terraform .terraform.lock.hcl
+        # run: zip -r ${{ inputs.gh_environment }}.zip ./*
         # run: zip -r ${{ inputs.gh_environment }}.zip ./* -x "*.git*" -x "*.terraform*"
 
       - name: Upload Artifact

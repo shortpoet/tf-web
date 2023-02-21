@@ -58,8 +58,8 @@ jobs:
       # RESOURCE_GROUP: ${{ secrets.resource_group }}
       # TF_KEY: ${{ secrets.tf_key }}
     steps:
-      # - name: Checkout
-      #   uses: actions/checkout@v3.3.0
+      - name: Checkout
+        uses: actions/checkout@v3.3.0
 
       - name: AWS Credentials
         if: ${{ inputs.provider == 'aws' }}
@@ -102,9 +102,9 @@ jobs:
         with:
           terraform_version: ${{ inputs.tf_version }}
 
-      - name: Terraform Init
-        id: init
-        run: terraform init
+      # - name: Terraform Init
+      #   id: init
+      #   run: terraform init -lockfile=readonly -input=false
         # run: terraform init --backend-config="storage_account_name=$STORAGE_ACCOUNT" --backend-config="container_name=$CONTAINER_NAME" --backend-config="resource_group_name=$RESOURCE_GROUP" --backend-config="key=$TF_KEY"
 
       - name: debug pwd
