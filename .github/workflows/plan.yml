@@ -215,7 +215,8 @@ jobs:
         run: exit 1
 
       - name: Compress TF Plan artifact
-        run: zip -r ${{ inputs.gh_environment }}.zip ./*
+        run: zip -r ${{ inputs.gh_environment }}.zip plan.tfplan
+        # run: zip -r ${{ inputs.gh_environment }}.zip ./* -x "*.git*" -x "*.terraform*"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3.1.2

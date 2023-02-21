@@ -58,8 +58,8 @@ jobs:
       # RESOURCE_GROUP: ${{ secrets.resource_group }}
       # TF_KEY: ${{ secrets.tf_key }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3.3.0
+      # - name: Checkout
+      #   uses: actions/checkout@v3.3.0
 
       - name: AWS Credentials
         if: ${{ inputs.provider == 'aws' }}
