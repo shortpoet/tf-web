@@ -2,22 +2,22 @@
 name: Infra
 
 on:
-  # pull_request:
-  #   types: [ closed ]
-  #   branches:
-  #     - main
-  #     - uat
-  #     - develop
-  #   paths:
-  #     - '.iac/**'
-  #     - '.github/workflows/infra.yml'
-  #     - '.github/workflows/changed-files.yml'
-  #     - '.github/workflows/plan.yml'
-  #     - '.github/workflows/apply.yml'
-  #     - '.github/actions/dump-context/action.yml'
-  #     - '.github/actions/changed-files/action.yml'
-  #     - '.github/actions/aws-creds/action.yml'
-  #     # - 'app/**'
+  pull_request:
+    # types: [ closed ]
+    branches:
+      - main
+      - uat
+      - develop
+    paths:
+      - '.iac/**'
+      - '.github/workflows/infra.yml'
+      - '.github/workflows/changed-files.yml'
+      - '.github/workflows/plan.yml'
+      - '.github/workflows/apply.yml'
+      - '.github/actions/dump-context/action.yml'
+      - '.github/actions/changed-files/action.yml'
+      - '.github/actions/aws-creds/action.yml'
+      # - 'app/**'
   push:
     branches:
       - main
@@ -91,9 +91,13 @@ jobs:
       path: '.iac/aws/envs/dev/infra'
 
   aws-plan-uat:
+    # this creates the plan as soon as the PR is merged from develop to uat
+    # if: |
+    #   github.ref == 'refs/heads/uat' &&
+    #   github.event_name == 'push'
     if: |
       github.ref == 'refs/heads/uat' &&
-      github.event_name == 'push'
+      github.event_name == 'pull_request'
     uses: ./.github/workflows/plan.yml
     secrets: inherit
     # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
@@ -131,6 +135,7 @@ jobs:
       plan-title: 'AWS Prod Plan'
 
   aws-deploy-prod:
+      # startsWith(github.ref, 'refs/tags/v') &&
     if: |
       needs.check-tag.outputs.has_tag == 'true' &&
       github.event_name == 'release'
