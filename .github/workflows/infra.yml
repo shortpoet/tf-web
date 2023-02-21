@@ -106,6 +106,18 @@ jobs:
       provider: 'aws'
       gh_environment: 'dev'
       path: '.iac/aws/envs/dev/infra'
+      plan-title: 'AWS Dev Plan'
+
+  aws-deploy-dev:
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    uses: ./.github/workflows/apply.yml
+    secrets: inherit
+    # uses: shortpoet/tf-web/.github/workflows/apply.yml@main
+    needs: [aws-plan-dev]
+    with:
+      provider: 'aws'
+      gh_environment: 'dev'
+      path: '.iac/aws/envs/dev/infra'
 
   aws-plan-uat:
       # github.event.pull_request.state == 'open' &&
@@ -127,10 +139,20 @@ jobs:
       provider: 'aws'
       gh_environment: 'uat'
       path: '.iac/aws/envs/uat/infra'
+      plan-title: 'AWS UAT Plan'
+
+  aws-deploy-uat:
+    if: |
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.ref == 'develop' &&
+      github.event.pull_request.base.ref == 'uat'
+    uses: ./.github/workflows/apply.yml
+    secrets: inherit
+    # uses: shortpoet/tf-web/.github/workflows/apply.yml@main
+    needs: [aws-plan-uat, aws-deploy-dev]
 
   aws-plan-prod:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    needs : [aws-plan-uat]
     # needs : [aws-plan-dev, aws-plan-uat]
     uses: ./.github/workflows/plan.yml
     secrets: inherit
@@ -139,3 +161,4 @@ jobs:
       provider: 'aws'
       gh_environment: 'prod'
       path: '.iac/aws/envs/prod/infra'
+      plan-title: 'AWS Prod Plan'

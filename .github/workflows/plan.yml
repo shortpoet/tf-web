@@ -30,6 +30,11 @@ on:
         required: false
         type: boolean
         default: false
+      plan-title:
+        description: 'Specifies the title of the plan.'
+        required: false
+        type: string
+        default: 'Terraform Plan'
       # GITHUB_TOKEN:
       #   description: 'The secrets.GITHUB_TOKEN so that the action can create a comment on the PR'
       #   required: true
