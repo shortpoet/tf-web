@@ -33,6 +33,21 @@ on:
       - '.github/actions/changed-files/action.yml'
       - '.github/actions/aws-creds/action.yml'
       # - 'app/**'
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+  release:
+    types:
+      - published
+    paths:
+      - '.iac/**'
+      - '.github/workflows/infra.yml'
+      - '.github/workflows/changed-files.yml'
+      - '.github/workflows/plan.yml'
+      - '.github/workflows/apply.yml'
+      - '.github/actions/dump-context/action.yml'
+      - '.github/actions/changed-files/action.yml'
+      - '.github/actions/aws-creds/action.yml'
+      # - 'app/**'
 permissions:
   contents: read
   pull-requests: write
@@ -48,7 +63,10 @@ jobs:
         run: echo "$GITHUB_CONTEXT"
 
   check-tag:
-    if: github.event_name == 'push' || github.event_name == 'release'
+    if: |
+      startsWith(github.ref, 'refs/tags') &&
+      (github.event_name == 'push' ||
+      github.event_name == 'release')
     runs-on: ubuntu-latest
     outputs:
       has_tag: ${{ steps.check-tag.outputs.has_tag }}
@@ -95,6 +113,11 @@ jobs:
     # if: |
     #   github.ref == 'refs/heads/uat' &&
     #   github.event_name == 'push'
+
+    # ||
+    # (github.ref == 'refs/heads/main' &&
+    # github.event_name == 'push')
+
     # https://stackoverflow.com/questions/63594658/git-refs-merge-vs-head-in-pull-request
     # 'refs/pull/[0-9]+/merge'
     if: |
@@ -102,9 +125,7 @@ jobs:
       endsWith(github.ref, '/merge') &&
       github.head_ref == 'uat' &&
       github.base_ref == 'main' &&
-      github.event_name == 'pull_request') ||
-      (github.ref == 'refs/heads/main' &&
-      github.event_name == 'push')
+      github.event_name == 'pull_request')
     uses: ./.github/workflows/plan.yml
     secrets: inherit
     with:
@@ -126,12 +147,16 @@ jobs:
       path: '.iac/aws/envs/uat/infra'
 
   aws-plan-prod:
+    # run plan on both push and release also creates possbile race condition and might not be necessary
+    # (needs.check-tag.outputs.has_tag == 'true' &&
+    # github.event_name == 'push') ||
     if: |
-      needs.check-tag.outputs.has_tag == 'true' &&
-      github.event_name == 'push'
+      (needs.check-tag.outputs.has_tag == 'true' &&
+      github.event_name == 'release')
     uses: ./.github/workflows/plan.yml
     secrets: inherit
-    needs : [aws-deploy-uat, check-tag]
+    needs : [check-tag]
+    # needs : [aws-deploy-uat, check-tag]
     with:
       provider: 'aws'
       gh_environment: 'prod'
@@ -145,7 +170,8 @@ jobs:
       github.event_name == 'release'
     uses: ./.github/workflows/apply.yml
     secrets: inherit
-    needs: [aws-plan-prod, check-tag]
+    # needs : [check-tag]
+    needs : [aws-plan-prod, check-tag]
     with:
       provider: 'aws'
       gh_environment: 'prod'

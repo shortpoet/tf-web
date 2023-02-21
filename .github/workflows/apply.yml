@@ -89,9 +89,10 @@ jobs:
         if: inputs.gh_environment == 'uat'
         run: |
           OTHER_REPO="shortpoet/tf-web"
-          WF_NAME="Terraform Plan"
-          ARTIFACT_NAME="uat.zip"
-          RUN_ID=$(gh run --repo "${OTHER_REPO}" list --workflow "${WF_NAME}" --json databaseId --jq ''.[0].databaseId')
+          WF_NAME="Infra"
+          BRANCH='uat'
+          ARTIFACT_NAME="$BRANCH"
+          RUN_ID=$(gh run --repo "${OTHER_REPO}" list --workflow "${WF_NAME}" --branch "${BRANCH}" --json databaseId --jq '.[0].databaseId')
           gh run --repo "${OTHER_REPO}" download "${RUN_ID}" -n "${ARTIFACT_NAME}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
