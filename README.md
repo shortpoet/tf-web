@@ -1,5 +1,17 @@
 # tf-web
 
+## refs
+
+- [Terraform: AWS: S3: Static Website Hosting](https://www.terraform.io/docs/providers/aws/r/s3_bucket.html#static-website-hosting)
+- [](https://github.com/Pwd9000-ML/Azure-Terraform-Deployments)
+- [GH Security](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#understanding-the-risk-of-script-injections)
+- [action script](https://github.com/actions/github-script)
+- [tf gh actions](https://github.com/dflook/terraform-github-actions)
+- [changed files](https://dev.to/scienta/get-changed-files-in-github-actions-1p36)
+- [blog](https://gaunacode.com/deploying-terraform-at-scale-with-github-actions)
+- [blog](https://blog.testdouble.com/posts/2021-12-07-elevate-your-terraform-workflow-with-github-actions/)
+- 
+
 ## deploy
 
 ```bash
