@@ -2,22 +2,22 @@
 name: Infra
 
 on:
-  pull_request:
-    types: [ closed ]
-    branches:
-      - main
-      - uat
-      - develop
-    paths:
-      - '.iac/**'
-      - '.github/workflows/infra.yml'
-      - '.github/workflows/changed-files.yml'
-      - '.github/workflows/plan.yml'
-      - '.github/workflows/apply.yml'
-      - '.github/actions/dump-context/action.yml'
-      - '.github/actions/changed-files/action.yml'
-      - '.github/actions/aws-creds/action.yml'
-      # - 'app/**'
+  # pull_request:
+  #   types: [ closed ]
+  #   branches:
+  #     - main
+  #     - uat
+  #     - develop
+  #   paths:
+  #     - '.iac/**'
+  #     - '.github/workflows/infra.yml'
+  #     - '.github/workflows/changed-files.yml'
+  #     - '.github/workflows/plan.yml'
+  #     - '.github/workflows/apply.yml'
+  #     - '.github/actions/dump-context/action.yml'
+  #     - '.github/actions/changed-files/action.yml'
+  #     - '.github/actions/aws-creds/action.yml'
+  #     # - 'app/**'
   push:
     branches:
       - main
@@ -46,6 +46,84 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
 
+  check-tag:
+    if: github.event_name == 'push' || github.event_name == 'release'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check tag
+        id: check-tag
+        run: |
+          has_tag=$([[ ${{ github.ref }} =~ ^refs\/tags\/v[0-9]+\.[0-9]+\.[0-9]+$ ]])
+          echo "has_tag=$has_tag" >> $GITHUB_OUTPUT
+
+  debug-tag:
+    runs-on: ubuntu-latest
+    if: ${{ steps.check-tag.outputs.has_tag }} == ''
+    steps:
+      - name: Debug tag
+        run: |
+          echo ${{ steps.check-tag.outputs.has_tag }}
+
+  # aws-plan-dev:
+  #   if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+  #   uses: ./.github/workflows/plan.yml
+  #   secrets: inherit
+  #   # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
+  #   with:
+  #     provider: 'aws'
+  #     gh_environment: 'dev'
+  #     path: '.iac/aws/envs/dev/infra'
+  #     plan-title: 'AWS Dev Plan'
+
+  # aws-deploy-dev:
+  #   if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+  #   uses: ./.github/workflows/apply.yml
+  #   secrets: inherit
+  #   # uses: shortpoet/tf-web/.github/workflows/apply.yml@main
+  #   needs: [aws-plan-dev]
+  #   with:
+  #     provider: 'aws'
+  #     gh_environment: 'dev'
+  #     path: '.iac/aws/envs/dev/infra'
+
+  # aws-plan-uat:
+  #   if: |
+  #     github.ref == 'refs/heads/uat' &&
+  #     github.event_name == 'push'
+  #   uses: ./.github/workflows/plan.yml
+  #   secrets: inherit
+  #   # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
+  #   with:
+  #     provider: 'aws'
+  #     gh_environment: 'uat'
+  #     path: '.iac/aws/envs/uat/infra'
+  #     plan-title: 'AWS UAT Plan'
+
+  # aws-deploy-uat:
+  #   if: |
+  #     github.ref == 'refs/heads/uat' &&
+  #     github.event_name == 'push'
+  #   uses: ./.github/workflows/apply.yml
+  #   secrets: inherit
+  #   # uses: shortpoet/tf-web/.github/workflows/apply.yml@main
+  #   needs: [aws-plan-uat, aws-deploy-dev]
+  #   with:
+  #     provider: 'aws'
+  #     gh_environment: 'uat'
+  #     path: '.iac/aws/envs/uat/infra'
+
+  # aws-plan-prod:
+  #   if:
+  #   # needs : [aws-plan-dev, aws-plan-uat]
+  #   uses: ./.github/workflows/plan.yml
+  #   secrets: inherit
+  #   # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
+  #   with:
+  #     provider: 'aws'
+  #     gh_environment: 'prod'
+  #     path: '.iac/aws/envs/prod/infra'
+  #     plan-title: 'AWS Prod Plan'
+
   # changed-files:
   #   uses: shortpoet/tf-web/.github/workflows/changed-files.yml@main
 
@@ -71,56 +149,6 @@ jobs:
   #         echo ${{ steps.dump-changed-files.outputs.tf }}
   #         echo ${{ steps.dump-changed-files.outputs.yml }}
 
-      # - name: Check tag
-      #   id: check-tag
-      #   run: |
-      #     if [[ ${{ github.ref }} =~ ^refs\/tags\/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then echo ::set-output name=environment::production
-      #     elif [[ ${{ github.ref }} == 'refs/heads/main' ]]; then echo ::set-output name=environment::staging
-      #     else echo ::set-output name=environment::unknown
-      #     fi
-
-      # - name: Terraform Apply Global
-      #   if: github.event_name == 'push' || github.event_name == 'release'
-      #   working-directory: 07-managing-multiple-environments/file-structure/global
-      #   run: |
-      #     terraform init
-      #     terraform apply -auto-approve
-
-      # - name: Terraform Apply Staging
-      #   if: steps.check-tag.outputs.environment == 'staging' && github.event_name == 'push'
-      #   run: terraform apply -var db_pass=${{secrets.DB_PASS }} -auto-approve
-
-      # - name: Terraform Apply Production
-      #   if: steps.check-tag.outputs.environment == 'production' && github.event_name == 'release'
-      #   working-directory: 07-managing-multiple-environments/file-structure/production
-      #   run: |
-      #     terraform init
-      #     terraform apply -var db_pass=${{secrets.DB_PASS }} -auto-approve
-
-
-  aws-plan-dev:
-    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
-    uses: ./.github/workflows/plan.yml
-    secrets: inherit
-    # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
-    with:
-      provider: 'aws'
-      gh_environment: 'dev'
-      path: '.iac/aws/envs/dev/infra'
-      plan-title: 'AWS Dev Plan'
-
-  aws-deploy-dev:
-    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
-    uses: ./.github/workflows/apply.yml
-    secrets: inherit
-    # uses: shortpoet/tf-web/.github/workflows/apply.yml@main
-    needs: [aws-plan-dev]
-    with:
-      provider: 'aws'
-      gh_environment: 'dev'
-      path: '.iac/aws/envs/dev/infra'
-
-  aws-plan-uat:
       # github.event.pull_request.state == 'open' &&
       # github.event.pull_request.draft == false &&
       # github.event.pull_request.merged == false &&
@@ -134,40 +162,3 @@ jobs:
       # github.event.pull_request.base.ref == 'uat'
       # github.event_name == 'push' &&
     # if: github.event.pull_request.merged == true
-    if: |
-      github.ref == 'refs/heads/uat' &&
-      github.event.pull_request.merged == true
-    uses: ./.github/workflows/plan.yml
-    secrets: inherit
-    # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
-    with:
-      provider: 'aws'
-      gh_environment: 'uat'
-      path: '.iac/aws/envs/uat/infra'
-      plan-title: 'AWS UAT Plan'
-
-  aws-deploy-uat:
-    if: |
-      github.ref == 'refs/heads/uat' &&
-      github.event_name == 'push' &&
-      github.event.commits
-    uses: ./.github/workflows/apply.yml
-    secrets: inherit
-    # uses: shortpoet/tf-web/.github/workflows/apply.yml@main
-    needs: [aws-plan-uat, aws-deploy-dev]
-    with:
-      provider: 'aws'
-      gh_environment: 'uat'
-      path: '.iac/aws/envs/uat/infra'
-
-  aws-plan-prod:
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    # needs : [aws-plan-dev, aws-plan-uat]
-    uses: ./.github/workflows/plan.yml
-    secrets: inherit
-    # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
-    with:
-      provider: 'aws'
-      gh_environment: 'prod'
-      path: '.iac/aws/envs/prod/infra'
-      plan-title: 'AWS Prod Plan'
