@@ -10,7 +10,10 @@
 - [changed files](https://dev.to/scienta/get-changed-files-in-github-actions-1p36)
 - [blog](https://gaunacode.com/deploying-terraform-at-scale-with-github-actions)
 - [blog](https://blog.testdouble.com/posts/2021-12-07-elevate-your-terraform-workflow-with-github-actions/)
-- 
+- [pr API trigger - gh issue](https://github.com/actions/download-artifact/issues/3#issuecomment-1017141067)
+- [pr API trigger- Keeping your GitHub Actions and workflows secure Part 1: Preventing pwn requests](https://securitylab.github.com/research/github-actions-preventing-pwn-requests/)
+- [action download artifact](https://github.com/dawidd6/action-download-artifact)
+- [set-cache-control-for-entire-s3-bucket-automatically-using-bucket-policies](https://stackoverflow.com/questions/10435334/set-cache-control-for-entire-s3-bucket-automatically-using-bucket-policies)
 
 ## deploy
 
