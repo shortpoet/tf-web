@@ -46,18 +46,19 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
 
-  check-tag:
-    if: github.event_name == 'push' || github.event_name == 'release'
-    runs-on: ubuntu-latest
-    outputs:
-      has_tag: ${{ steps.check-tag.outputs.has_tag }}
-    steps:
-      - name: Check tag
-        id: check-tag
-        run: |
-          has_tag=$([[ ${{ github.ref }} =~ ^refs\/tags\/v[0-9]+\.[0-9]+\.[0-9]+$ ]] && echo 'true' || echo 'false')
-          echo "has_tag = $has_tag"
-          echo "has_tag=$has_tag" >> $GITHUB_OUTPUT
+  # check-tag:
+  #   if: github.event_name == 'push' || github.event_name == 'release'
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     has_tag: ${{ steps.check-tag.outputs.has_tag }}
+  #   steps:
+  #     - name: Check tag
+  #       id: check-tag
+  #         # has_tag=$([[ ${{ github.ref }} =~ ^refs\/tags\/v[0-9]+\.[0-9]+\.[0-9]+$ ]] && echo 'true' || echo 'false')
+  #       run: |
+  #         has_tag=startsWith(github.ref, '^refs\/tags\/v[0-9]+\.[0-9]+\.[0-9]+$')
+  #         echo "has_tag = $has_tag"
+  #         echo "has_tag=$has_tag" >> $GITHUB_OUTPUT
 
   # debug-tag:
   #   runs-on: ubuntu-latest
@@ -118,7 +119,7 @@ jobs:
 
   aws-plan-prod:
     if: |
-      github.ref =~ ^refs\/tags\/v[0-9]+\.[0-9]+\.[0-9]+$ ]] &&
+      startsWith(github.ref, '^refs\/tags\/v[0-9]+\.[0-9]+\.[0-9]+$') &&
       && github.event_name == 'push'
     uses: ./.github/workflows/plan.yml
     secrets: inherit
@@ -132,7 +133,7 @@ jobs:
 
   aws-deploy-prod:
     if: |
-      github.ref =~ ^refs\/tags\/v[0-9]+\.[0-9]+\.[0-9]+$ ]] &&
+      startsWith(github.ref, '^refs\/tags\/v[0-9]+\.[0-9]+\.[0-9]+$') &&
       && github.event_name == 'release'
     uses: ./.github/workflows/apply.yml
     secrets: inherit
