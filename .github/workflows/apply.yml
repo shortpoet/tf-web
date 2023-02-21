@@ -90,7 +90,9 @@ jobs:
           ls -la
 
       - name: Decompress TF Plan artifact
-        run: unzip "${{ inputs.gh_environment }}".zip
+        run: |
+          rm .terraform.lock.hcl
+          unzip "${{ inputs.gh_environment }}".zip
 
       - name: debug pwd
         run: |
