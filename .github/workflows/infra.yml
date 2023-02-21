@@ -33,6 +33,21 @@ on:
       - '.github/actions/changed-files/action.yml'
       - '.github/actions/aws-creds/action.yml'
       # - 'app/**'
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+  release:
+    types:
+      - published
+    paths:
+      - '.iac/**'
+      - '.github/workflows/infra.yml'
+      - '.github/workflows/changed-files.yml'
+      - '.github/workflows/plan.yml'
+      - '.github/workflows/apply.yml'
+      - '.github/actions/dump-context/action.yml'
+      - '.github/actions/changed-files/action.yml'
+      - '.github/actions/aws-creds/action.yml'
+      # - 'app/**'
 permissions:
   contents: read
   pull-requests: write
