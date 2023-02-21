@@ -98,11 +98,13 @@ jobs:
     # https://stackoverflow.com/questions/63594658/git-refs-merge-vs-head-in-pull-request
     # 'refs/pull/[0-9]+/merge'
     if: |
-      startsWith(github.ref, 'refs/pull') &&
+      (startsWith(github.ref, 'refs/pull') &&
       endsWith(github.ref, '/merge') &&
       github.head_ref == 'uat' &&
       github.base_ref == 'main' &&
-      github.event_name == 'pull_request'
+      github.event_name == 'pull_request') ||
+      (github.ref == 'refs/heads/main' &&
+      github.event_name == 'push')
     uses: ./.github/workflows/plan.yml
     secrets: inherit
     with:
