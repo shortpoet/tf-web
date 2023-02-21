@@ -150,6 +150,10 @@ jobs:
     secrets: inherit
     # uses: shortpoet/tf-web/.github/workflows/apply.yml@main
     needs: [aws-plan-uat, aws-deploy-dev]
+    with:
+      provider: 'aws'
+      gh_environment: 'uat'
+      path: '.iac/aws/envs/uat/infra'
 
   aws-plan-prod:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
