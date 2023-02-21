@@ -2,18 +2,36 @@
 name: Infra
 
 on:
-  push:
+  pull_request:
     branches:
       - main
+      - uat
       - develop
     paths:
       - '.iac/**'
       - '.github/workflows/infra.yml'
       - '.github/workflows/changed-files.yml'
       - '.github/workflows/plan.yml'
+      - '.github/workflows/apply.yml'
       - '.github/actions/dump-context/action.yml'
       - '.github/actions/changed-files/action.yml'
       - '.github/actions/aws-creds/action.yml'
+      # - 'app/**'
+  push:
+    branches:
+      - main
+      - uat
+      - develop
+    paths:
+      - '.iac/**'
+      - '.github/workflows/infra.yml'
+      - '.github/workflows/changed-files.yml'
+      - '.github/workflows/plan.yml'
+      - '.github/workflows/apply.yml'
+      - '.github/actions/dump-context/action.yml'
+      - '.github/actions/changed-files/action.yml'
+      - '.github/actions/aws-creds/action.yml'
+      # - 'app/**'
 permissions:
   contents: read
   pull-requests: write
@@ -80,7 +98,7 @@ jobs:
 
 
   aws-plan-dev:
-    if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
     uses: ./.github/workflows/plan.yml
     secrets: inherit
     # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
@@ -88,9 +106,36 @@ jobs:
       provider: 'aws'
       gh_environment: 'dev'
       path: '.iac/aws/envs/dev/infra'
+      plan-title: 'AWS Dev Plan'
+
+  aws-deploy-dev:
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    uses: ./.github/workflows/apply.yml
+    secrets: inherit
+    # uses: shortpoet/tf-web/.github/workflows/apply.yml@main
+    needs: [aws-plan-dev]
+    with:
+      provider: 'aws'
+      gh_environment: 'dev'
+      path: '.iac/aws/envs/dev/infra'
 
   aws-plan-uat:
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'uat'
+      # github.event.pull_request.state == 'open' &&
+      # github.event.pull_request.draft == false &&
+      # github.event.pull_request.merged == false &&
+      # github.event.pull_request.mergeable_state == 'clean' &&
+      # github.event.pull_request.mergeable == true &&
+      # github.event.pull_request.merge_state_status == 'clean' &&
+      # github.event.pull_request.merge_commit_sha != '' &&
+      # github.event.pull_request.merge_commit_sha != null
+      # github.event_name == 'pull_request' &&
+      # github.event.pull_request.head.ref == 'develop' &&
+      # github.event.pull_request.base.ref == 'uat'
+    if: |
+      github.ref == 'refs/heads/uat' &&
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.ref == 'develop' &&
+      github.event.pull_request.base.ref == 'uat'
     uses: ./.github/workflows/plan.yml
     secrets: inherit
     # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
@@ -98,10 +143,25 @@ jobs:
       provider: 'aws'
       gh_environment: 'uat'
       path: '.iac/aws/envs/uat/infra'
+      plan-title: 'AWS UAT Plan'
+
+  aws-deploy-uat:
+    if: |
+      github.ref == 'refs/heads/uat' &&
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.ref == 'develop' &&
+      github.event.pull_request.base.ref == 'uat'
+    uses: ./.github/workflows/apply.yml
+    secrets: inherit
+    # uses: shortpoet/tf-web/.github/workflows/apply.yml@main
+    needs: [aws-plan-uat, aws-deploy-dev]
+    with:
+      provider: 'aws'
+      gh_environment: 'uat'
+      path: '.iac/aws/envs/uat/infra'
 
   aws-plan-prod:
-    if: github.ref == 'refs/heads/main'
-    needs : [aws-plan-uat]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     # needs : [aws-plan-dev, aws-plan-uat]
     uses: ./.github/workflows/plan.yml
     secrets: inherit
@@ -110,3 +170,4 @@ jobs:
       provider: 'aws'
       gh_environment: 'prod'
       path: '.iac/aws/envs/prod/infra'
+      plan-title: 'AWS Prod Plan'

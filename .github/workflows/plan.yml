@@ -30,6 +30,11 @@ on:
         required: false
         type: boolean
         default: false
+      plan-title:
+        description: 'Specifies the title of the plan.'
+        required: false
+        type: string
+        default: 'Terraform Plan'
       # GITHUB_TOKEN:
       #   description: 'The secrets.GITHUB_TOKEN so that the action can create a comment on the PR'
       #   required: true
@@ -111,7 +116,8 @@ jobs:
 
       - name: Terraform Init
         id: init
-        run: terraform init
+        run: terraform init -input=false
+        # run: terraform init -lockfile=readonly -input=false
         # run: terraform init --backend-config="storage_account_name=$STORAGE_ACCOUNT" --backend-config="container_name=$CONTAINER_NAME" --backend-config="resource_group_name=$RESOURCE_GROUP" --backend-config="key=$TF_KEY"
 
       - name: Terraform Validate
@@ -134,9 +140,9 @@ jobs:
         shell: bash
 
       - name: Terraform Plan Output
-        if: always()
+        # if: always()
         uses: actions/github-script@v6
-        # if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -179,7 +185,7 @@ jobs:
         id: comment
         uses: actions/github-script@v6
         # uses: actions/github-script@v3
-        # if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request'
         env:
           PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
         with:
@@ -198,7 +204,7 @@ jobs:
 
               *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
 
-              github.issues.createComment({
+              github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -210,7 +216,9 @@ jobs:
         run: exit 1
 
       - name: Compress TF Plan artifact
-        run: zip -r ${{ inputs.gh_environment }}.zip ./*
+        run: zip -r ${{ inputs.gh_environment }}.zip plan.tfplan .terraform .terraform.lock.hcl
+        # run: zip -r ${{ inputs.gh_environment }}.zip ./*
+        # run: zip -r ${{ inputs.gh_environment }}.zip ./* -x "*.git*" -x "*.terraform*"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3.1.2

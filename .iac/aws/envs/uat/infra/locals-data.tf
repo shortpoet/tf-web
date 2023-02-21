@@ -14,8 +14,8 @@ locals {
 
   zone_name = module.common_vars.zone_name
 
-  site_domain_dev = module.common_vars.site_domain_dev
-  subdomain_dev   = module.common_vars.subdomain_dev
+  site_domain_uat = module.common_vars.site_domain_uat
+  subdomain_uat   = module.common_vars.subdomain_uat
 
   tags = module.common_vars.tags
 }
