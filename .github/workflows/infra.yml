@@ -75,7 +75,7 @@ jobs:
     # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
     with:
       provider: 'aws'
-      # gh_environment: 'dev'
+      gh_environment: 'dev'
       path: '.iac/aws/envs/dev/infra'
       plan-title: 'AWS Dev Plan'
 
@@ -103,7 +103,7 @@ jobs:
     # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
     with:
       provider: 'aws'
-      # gh_environment: 'uat'
+      gh_environment: 'uat'
       path: '.iac/aws/envs/uat/infra'
       plan-title: 'AWS UAT Plan'
 
@@ -130,7 +130,7 @@ jobs:
     needs : [aws-deploy-uat, check-tag]
     with:
       provider: 'aws'
-      # gh_environment: 'prod'
+      gh_environment: 'prod'
       path: '.iac/aws/envs/prod/infra'
       plan-title: 'AWS Prod Plan'
 
