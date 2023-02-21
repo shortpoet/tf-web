@@ -3,7 +3,7 @@ terraform {
   backend "s3" {
     region         = "us-east-1"
     bucket         = "341864192726-terraform-backend"
-    key            = "tf-web/aws/envs/dev/infra/terraform.tfstate"
+    key            = "tf-web/infra/aws/envs/dev/terraform.tfstate"
     dynamodb_table = "terraform-backend-lock"
     profile        = "terraform-admin"
     encrypt        = "true"
