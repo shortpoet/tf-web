@@ -111,9 +111,9 @@ jobs:
     #   github.ref == 'refs/heads/uat' &&
     #   github.event_name == 'push'
 
-    # adding this creates a race condition on the tf state
-      # (github.ref == 'refs/heads/main' &&
-      # github.event_name == 'push') ||
+    # ||
+    # (github.ref == 'refs/heads/main' &&
+    # github.event_name == 'push')
 
     # https://stackoverflow.com/questions/63594658/git-refs-merge-vs-head-in-pull-request
     # 'refs/pull/[0-9]+/merge'
@@ -144,10 +144,10 @@ jobs:
       path: '.iac/aws/envs/uat/infra'
 
   aws-plan-prod:
-    # run plan on both push and release as opposed to UAT
+    # run plan on both push and release also creates possbile race condition and might not be necessary
+    # (needs.check-tag.outputs.has_tag == 'true' &&
+    # github.event_name == 'push') ||
     if: |
-      (needs.check-tag.outputs.has_tag == 'true' &&
-      github.event_name == 'push') ||
       (needs.check-tag.outputs.has_tag == 'true' &&
       github.event_name == 'release')
     uses: ./.github/workflows/plan.yml
