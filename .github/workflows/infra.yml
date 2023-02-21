@@ -3,6 +3,7 @@ name: Infra
 
 on:
   pull_request:
+    types: [ closed ]
     branches:
       - main
       - uat
