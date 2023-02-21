@@ -1,77 +1,29 @@
-locals {
-  tags = merge(
-    {
-      Name = var.site_domain_bucket_name
-    },
-    var.tags,
-  )
-}
 
-resource "aws_s3_bucket" "site" {
-  bucket = var.site_domain_bucket_name
-  # acl    = "private"
-  tags = local.tags
-}
 
-resource "aws_s3_bucket_website_configuration" "site" {
-  bucket = aws_s3_bucket.site.id
+resource "aws_s3_object" "this" {
+  for_each = fileset(var.file_path, "**")
 
-  index_document {
-    suffix = "index.html"
-  }
+  bucket        = var.bucket_id
+  acl           = var.acl
+  cache_control = var.cache_control
 
-  error_document {
-    key = "index.html"
-  }
-}
 
-resource "aws_s3_bucket_acl" "site" {
-  bucket = aws_s3_bucket.site.id
+  content_language = var.content_language
 
-  acl = "public-read"
-}
+  storage_class          = var.storage_class
+  server_side_encryption = random_pet.this.keepers["sse_encrypt"] ? "AES256" : null
 
-resource "aws_s3_bucket_policy" "site" {
-  bucket = aws_s3_bucket.site.id
 
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid       = "PublicReadGetObject"
-        Effect    = "Allow"
-        Principal = "*"
-        Action    = "s3:GetObject"
-        Resource = [
-          aws_s3_bucket.site.arn,
-          "${aws_s3_bucket.site.arn}/*",
-        ],
-        # Condition = {
-        #   StringEquals = {
-        #     "aws:Referer" = [
-        #       "https://${var.site_domain}/*",
-        #       "https://${var.site_domain}",
-        #     ]
-        #   }
-        # }
-        # Condition = {
-        #   StringEquals = {
-        #     "aws:SourceIp" = [
-        #       "(add all IPs listed at https://www.cloudflare.com/ips)",
-        #       "https://${var.site_domain}",
-        #     ]
-        #   }
-        # }
-      },
+
+  key          = each.value
+  source       = "${var.file_path}/${each.value}"
+  etag         = filemd5("${var.file_path}/${each.value}")
+  content_type = lookup(jsondecode(file("${path.module}/src/mime.json")), regex("\\.[^.]+$", each.value), null)
+
+
+  lifecycle {
+    replace_triggered_by = [
+      random_pet.this
     ]
-  })
-}
-
-resource "aws_s3_bucket_website_configuration" "redirect" {
-  count  = var.redirect_all_requests_to != null ? 1 : 0
-  bucket = aws_s3_bucket.site.id
-
-  redirect_all_requests_to {
-    host_name = var.redirect_all_requests_to
   }
 }
