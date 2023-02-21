@@ -27,6 +27,16 @@ aws s3 cp website/ s3://$(cat site_domain_root.txt)/ --recursive --profile terra
 aws s3 cp shortpoet_site/ s3://$(cat site_domain_dev.txt)/ --recursive --profile terraform-admin
 ```
 
+## tags
+
+```bash
+git tag -a v0.0.1 -m "first release"
+git push --follow-tags
+git tag -d v0.0.1
+git push --delete origin v0.0.1
+```
+
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
