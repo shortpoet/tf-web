@@ -1,6 +1,9 @@
 ---
 name: Infra
 
+env:
+  BASE_PATH: '.iac/infra'
+
 on:
   pull_request:
     # types: [ closed ]
@@ -9,7 +12,7 @@ on:
       - uat
       - develop
     paths:
-      - '.iac/**'
+      - '.iac/infra/**'
       - '.github/workflows/infra.yml'
       - '.github/workflows/changed-files.yml'
       - '.github/workflows/plan.yml'
@@ -24,7 +27,7 @@ on:
       - uat
       - develop
     paths:
-      - '.iac/**'
+      - '.iac/infra/**'
       - '.github/workflows/infra.yml'
       - '.github/workflows/changed-files.yml'
       - '.github/workflows/plan.yml'
@@ -106,7 +109,7 @@ jobs:
     with:
       provider: 'aws'
       gh_environment: 'dev'
-      path: '.iac/aws/envs/dev/infra'
+      path: '.iac/infra/aws/envs'
 
   aws-plan-uat:
     # this creates the plan as soon as the PR is merged from develop to uat
