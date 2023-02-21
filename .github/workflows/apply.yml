@@ -73,14 +73,29 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           role-duration-seconds: 1200
 
+      - name: debug pwd
+        run: |
+          pwd
+          ls -la
+
       - name: Download Artifact
         uses: actions/download-artifact@v3.0.2
         with:
           name: "${{ inputs.gh_environment }}"
           path: ${{ inputs.path }}
 
+      - name: debug pwd
+        run: |
+          pwd
+          ls -la
+
       - name: Decompress TF Plan artifact
         run: unzip "${{ inputs.gh_environment }}".zip
+
+      - name: debug pwd
+        run: |
+          pwd
+          ls -la
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2.0.3
@@ -91,6 +106,11 @@ jobs:
         id: init
         run: terraform init
         # run: terraform init --backend-config="storage_account_name=$STORAGE_ACCOUNT" --backend-config="container_name=$CONTAINER_NAME" --backend-config="resource_group_name=$RESOURCE_GROUP" --backend-config="key=$TF_KEY"
+
+      - name: debug pwd
+        run: |
+          pwd
+          ls -la
 
       - name: Terraform Apply
         run: terraform apply plan.tfplan
