@@ -3,6 +3,10 @@ name: "Terraform Plan"
 on:
   workflow_call:
     inputs:
+      provider:
+        description: 'Specifies the cloud provider.'
+        required: true
+        type: string
       path:
         description: 'Specifies the path of the root terraform module.'
         required: true
@@ -26,6 +30,15 @@ on:
         required: false
         type: boolean
         default: false
+      plan-title:
+        description: 'Specifies the title of the plan.'
+        required: false
+        type: string
+        default: 'Terraform Plan'
+      # GITHUB_TOKEN:
+      #   description: 'The secrets.GITHUB_TOKEN so that the action can create a comment on the PR'
+      #   required: true
+      #   type: string
     # secrets:
     #   arm_client_id:
     #     description: 'Specifies the Azure ARM CLIENT ID.'
@@ -43,15 +56,20 @@ on:
 jobs:
   build-plan:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.gh_environment }}
+    # leaving this here makes the plan stage require approval
+    # environment: ${{ inputs.gh_environment }}
     defaults:
       run:
         shell: bash
         working-directory: ${{ inputs.path }}
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       TF_LOG: TRACE
       TF_LOG_PATH: tf.log
       TF_IN_AUTOMATION: true
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       # TF_VAR_client_id: ${{ secrets.arm_client_id }}
       # TF_VAR_client_secret: ${{ secrets.arm_client_secret }}
       # TF_VAR_subscription_id: ${{ secrets.arm_subscription_id }}
@@ -65,17 +83,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3.3.0
 
-      - name: Scan IaC - tfsec
-        if: ${{ inputs.ENABLE_TFSEC == 'true' }}
-        uses: aquasecurity/tfsec-sarif-action@v0.1.4
+      - name: AWS Credentials
+        if: ${{ inputs.provider == 'aws' }}
+        uses: ./.github/actions/aws-creds
         with:
-          sarif_file: tfsec.sarif
+          aws-profile: ${{ vars.AWS_PROFILE }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.AWS_DEFAULT_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-duration-seconds: 1200
 
-      - name: Upload SARIF file
-        if: ${{ inputs.ENABLE_TFSEC == 'true' }}
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: tfsec.sarif
+      # - name: Scan IaC - tfsec
+      #   if: ${{ inputs.ENABLE_TFSEC == 'true' }}
+      #   uses: aquasecurity/tfsec-sarif-action@v0.1.4
+      #   with:
+      #     sarif_file: tfsec.sarif
+
+      # - name: Upload SARIF file
+      #   if: ${{ inputs.ENABLE_TFSEC == 'true' }}
+      #   uses: github/codeql-action/upload-sarif@v2
+      #   with:
+      #     sarif_file: tfsec.sarif
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2.0.3
@@ -88,7 +117,8 @@ jobs:
 
       - name: Terraform Init
         id: init
-        run: terraform init
+        run: terraform init -input=false
+        # run: terraform init -lockfile=readonly -input=false
         # run: terraform init --backend-config="storage_account_name=$STORAGE_ACCOUNT" --backend-config="container_name=$CONTAINER_NAME" --backend-config="resource_group_name=$RESOURCE_GROUP" --backend-config="key=$TF_KEY"
 
       - name: Terraform Validate
@@ -97,15 +127,99 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan --var-file=$TF_VARS --out=plan.tfplan
+        run: terraform plan --out=plan.tfplan
+        # run: terraform plan --var-file=$TF_VARS --out=plan.tfplan
         continue-on-error: true
+
+      # - name: Terraform Plan Output
+      #   if: always()
+      #   run: terraform show -json plan.tfplan > plan.json
+
+      - name: Terraform Show
+        id: show
+        run: terraform show -no-color plan.tfplan 2>&1 > /tmp/plan.txt
+        shell: bash
+
+      - name: Terraform Plan Output
+        # if: always()
+        uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require("fs");
+            const plan = fs.readFileSync("/tmp/plan.txt", "utf8");
+            const maxGitHubBodyCharacters = 65536;
+
+            function chunkSubstr(str, size) {
+              const numChunks = Math.ceil(str.length / size)
+              const chunks = new Array(numChunks)
+              for (let i = 0, o = 0; i < numChunks; ++i, o += size) {
+                chunks[i] = str.substr(o, size)
+              }
+              return chunks
+            }
+
+            // Split the Terraform plan into chunks if it's too big and can't fit into the GitHub Action
+            var plans = chunkSubstr(plan, maxGitHubBodyCharacters);
+            for (let i = 0; i < plans.length; i++) {
+              const output = `### ${{ inputs.plan-title }} Part # ${i + 1}
+              #### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+              #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+              #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+              <details><summary>Show Plan</summary>
+              \`\`\`\n
+              ${plans[i]}
+              \`\`\`
+              </details>
+              *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ inputs.working-directory }}\`, Workflow: \`${{ github.workflow }}\`*`;
+
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output
+              })
+            }
+
+      - name: add-plan-comment
+        id: comment
+        uses: actions/github-script@v6
+        # uses: actions/github-script@v3
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+              const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+              #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+              #### Terraform Validation 🤖${{ steps.validate.outputs.stdout }}
+              #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
+              <details><summary>Show Plan</summary>
+
+              \`\`\`${process.env.PLAN}\`\`\`
+
+              </details>
+
+              *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
+
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output
+              })
 
       - name: Terraform Plan Status
         if: steps.plan.outcome == 'failure'
         run: exit 1
 
       - name: Compress TF Plan artifact
-        run: zip -r ${{ inputs.gh_environment }}.zip ./*
+        run: zip -r ${{ inputs.gh_environment }}.zip plan.tfplan .terraform .terraform.lock.hcl
+        # run: zip -r ${{ inputs.gh_environment }}.zip ./*
+        # run: zip -r ${{ inputs.gh_environment }}.zip ./* -x "*.git*" -x "*.terraform*"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3.1.2
