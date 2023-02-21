@@ -84,20 +84,10 @@ jobs:
           name: "${{ inputs.gh_environment }}"
           path: ${{ inputs.path }}
 
-      - name: debug pwd
-        run: |
-          pwd
-          ls -la
-
       - name: Decompress TF Plan artifact
         run: |
           rm .terraform.lock.hcl
           unzip "${{ inputs.gh_environment }}".zip
-
-      - name: debug pwd
-        run: |
-          pwd
-          ls -la
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2.0.3
@@ -108,11 +98,6 @@ jobs:
       #   id: init
       #   run: terraform init -lockfile=readonly -input=false
         # run: terraform init --backend-config="storage_account_name=$STORAGE_ACCOUNT" --backend-config="container_name=$CONTAINER_NAME" --backend-config="resource_group_name=$RESOURCE_GROUP" --backend-config="key=$TF_KEY"
-
-      - name: debug pwd
-        run: |
-          pwd
-          ls -la
 
       - name: Terraform Apply
         run: terraform apply plan.tfplan
