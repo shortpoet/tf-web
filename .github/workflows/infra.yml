@@ -119,7 +119,7 @@ jobs:
   aws-plan-prod:
     if: |
       needs.check-tag.outputs.has_tag == 'true' &&
-      && github.event_name == 'push'
+      github.event_name == 'push'
     uses: ./.github/workflows/plan.yml
     secrets: inherit
     # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
@@ -133,7 +133,7 @@ jobs:
   aws-deploy-prod:
     if: |
       needs.check-tag.outputs.has_tag == 'true' &&
-      && github.event_name == 'release'
+      github.event_name == 'release'
     uses: ./.github/workflows/apply.yml
     secrets: inherit
     # uses: shortpoet/tf-web/.github/workflows/apply.yml@main
