@@ -79,10 +79,22 @@ jobs:
       #     ls -la
 
       - name: Download Artifact
+        if: inputs.gh_environment != 'uat'
         uses: actions/download-artifact@v3.0.2
         with:
           name: "${{ inputs.gh_environment }}"
           path: ${{ inputs.path }}
+
+      - name: Download Artifact - GH CLI
+        if: inputs.gh_environment == 'uat'
+        run: |
+          OTHER_REPO="shortpoet/tf-web"
+          WF_NAME="aws-plan-uat"
+          ARTIFACT_NAME="uat.zip"
+          RUN_ID=`gh run --repo ${OTHER_REPO} list --workflow ${WF_NAME} --json databaseId --jq .[0].databaseId`
+          gh run --repo ${OTHER_REPO} download ${RUN_ID} -n ${ARTIFACT_NAME}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Decompress TF Plan artifact
         run: |
