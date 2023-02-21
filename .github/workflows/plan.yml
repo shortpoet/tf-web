@@ -221,6 +221,17 @@ jobs:
         # run: zip -r ${{ inputs.gh_environment }}.zip ./*
         # run: zip -r ${{ inputs.gh_environment }}.zip ./* -x "*.git*" -x "*.terraform*"
 
+# https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
+      # - name: Save PR number
+      #   run: |
+      #     mkdir -p ./pr
+      #     echo ${{ github.event.number }} > ./pr/NR
+
+      # - uses: actions/upload-artifact@v2
+      #   with:
+      #     name: pr
+      #     path: pr/
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v3.1.2
         with:
