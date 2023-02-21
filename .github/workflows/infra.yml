@@ -143,9 +143,8 @@ jobs:
 
   aws-deploy-uat:
     if: |
-      github.event_name == 'pull_request' &&
-      github.event.pull_request.head.ref == 'develop' &&
-      github.event.pull_request.base.ref == 'uat'
+      github.ref == 'refs/heads/uat' &&
+      github.event_name == 'push'
     uses: ./.github/workflows/apply.yml
     secrets: inherit
     # uses: shortpoet/tf-web/.github/workflows/apply.yml@main
