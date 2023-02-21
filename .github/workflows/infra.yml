@@ -96,6 +96,7 @@ jobs:
     #   github.ref == 'refs/heads/uat' &&
     #   github.event_name == 'push'
     # https://stackoverflow.com/questions/63594658/git-refs-merge-vs-head-in-pull-request
+    # 'refs/pull/[0-9]+/merge'
     if: |
       startsWith(github.ref, 'refs/pull') &&
       endsWith(github.ref, '/merge') &&
@@ -116,7 +117,7 @@ jobs:
       github.event_name == 'push'
     uses: ./.github/workflows/apply.yml
     secrets: inherit
-    needs: [aws-plan-uat, aws-deploy-dev]
+    # needs: [aws-plan-uat, aws-deploy-dev]
     with:
       provider: 'aws'
       gh_environment: 'uat'
