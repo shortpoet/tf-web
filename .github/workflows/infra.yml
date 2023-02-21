@@ -2,6 +2,21 @@
 name: Infra
 
 on:
+  pull_request:
+    branches:
+      - main
+      - uat
+      - develop
+    paths:
+      - '.iac/**'
+      - '.github/workflows/infra.yml'
+      - '.github/workflows/changed-files.yml'
+      - '.github/workflows/plan.yml'
+      # - '.github/workflows/apply.yml'
+      - '.github/actions/dump-context/action.yml'
+      - '.github/actions/changed-files/action.yml'
+      - '.github/actions/aws-creds/action.yml'
+      # - 'app/**'
   push:
     branches:
       - main
