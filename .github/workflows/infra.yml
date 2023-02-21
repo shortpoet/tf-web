@@ -95,6 +95,11 @@ jobs:
     # if: |
     #   github.ref == 'refs/heads/uat' &&
     #   github.event_name == 'push'
+
+    # adding this creates a race condition on the tf state
+      # (github.ref == 'refs/heads/main' &&
+      # github.event_name == 'push') ||
+
     # https://stackoverflow.com/questions/63594658/git-refs-merge-vs-head-in-pull-request
     # 'refs/pull/[0-9]+/merge'
     if: |
@@ -102,9 +107,7 @@ jobs:
       endsWith(github.ref, '/merge') &&
       github.head_ref == 'uat' &&
       github.base_ref == 'main' &&
-      github.event_name == 'pull_request') ||
-      (github.ref == 'refs/heads/main' &&
-      github.event_name == 'push')
+      github.event_name == 'pull_request')
     uses: ./.github/workflows/plan.yml
     secrets: inherit
     with:
