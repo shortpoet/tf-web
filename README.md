@@ -14,6 +14,11 @@
 - [pr API trigger- Keeping your GitHub Actions and workflows secure Part 1: Preventing pwn requests](https://securitylab.github.com/research/github-actions-preventing-pwn-requests/)
 - [action download artifact](https://github.com/dawidd6/action-download-artifact)
 - [set-cache-control-for-entire-s3-bucket-automatically-using-bucket-policies](https://stackoverflow.com/questions/10435334/set-cache-control-for-entire-s3-bucket-automatically-using-bucket-policies)
+- [mime types spec](https://www.iana.org/assignments/media-types/media-types.xhtml)
+- [blog - mime types w/ external data source/tool](https://www.tangramvision.com/blog/abusing-terraform-to-upload-static-websites-to-s3)
+- [gh - s3 object module](https://github.com/chandan-singh/terraform-aws-s3-object-folder)
+- [gh - s3 object module](https://github.com/Lupus-Metallum/terraform-aws-s3-static-website)
+- [blog - cache control](https://csswizardry.com/2019/03/cache-control-for-civilians/)
 
 ## deploy
 
