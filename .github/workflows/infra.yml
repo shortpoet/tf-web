@@ -58,7 +58,8 @@ jobs:
 
   debug-tag:
     runs-on: ubuntu-latest
-    if: ${{ steps.check-tag.outputs.has_tag }} == ''
+    needs: check-tag
+    if: needs.check-tag.outputs.has_tag == ''
     steps:
       - name: Debug tag
         run: |
