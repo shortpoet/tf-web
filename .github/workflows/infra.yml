@@ -39,6 +39,7 @@ permissions:
 
 jobs:
   dump-context:
+    # if: github.ref
     runs-on: ubuntu-latest
     steps:
       - name: Dump GitHub context
@@ -83,7 +84,6 @@ jobs:
     if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
     uses: ./.github/workflows/apply.yml
     secrets: inherit
-    # uses: shortpoet/tf-web/.github/workflows/apply.yml@main
     needs: [aws-plan-dev]
     with:
       provider: 'aws'
@@ -95,12 +95,15 @@ jobs:
     # if: |
     #   github.ref == 'refs/heads/uat' &&
     #   github.event_name == 'push'
+    # https://stackoverflow.com/questions/63594658/git-refs-merge-vs-head-in-pull-request
     if: |
-      github.ref == 'refs/heads/uat' &&
+      startsWith(github.ref, 'refs/pull') &&
+      endsWith(github.ref, '/merge') &&
+      github.head_ref == 'uat' &&
+      github.base_ref == 'main' &&
       github.event_name == 'pull_request'
     uses: ./.github/workflows/plan.yml
     secrets: inherit
-    # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
     with:
       provider: 'aws'
       gh_environment: 'uat'
@@ -113,7 +116,6 @@ jobs:
       github.event_name == 'push'
     uses: ./.github/workflows/apply.yml
     secrets: inherit
-    # uses: shortpoet/tf-web/.github/workflows/apply.yml@main
     needs: [aws-plan-uat, aws-deploy-dev]
     with:
       provider: 'aws'
@@ -126,7 +128,6 @@ jobs:
       github.event_name == 'push'
     uses: ./.github/workflows/plan.yml
     secrets: inherit
-    # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
     needs : [aws-deploy-uat, check-tag]
     with:
       provider: 'aws'
@@ -141,7 +142,6 @@ jobs:
       github.event_name == 'release'
     uses: ./.github/workflows/apply.yml
     secrets: inherit
-    # uses: shortpoet/tf-web/.github/workflows/apply.yml@main
     needs: [aws-plan-prod, check-tag]
     with:
       provider: 'aws'
