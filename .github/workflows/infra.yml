@@ -132,11 +132,11 @@ jobs:
       # github.event_name == 'pull_request' &&
       # github.event.pull_request.head.ref == 'develop' &&
       # github.event.pull_request.base.ref == 'uat'
-    if: github.event.pull_request.merged == true
-    # if: |
-    #   github.ref == 'refs/heads/uat' &&
-    #   github.event_name == 'push' &&
-    #   github.event.commits
+    # if: github.event.pull_request.merged == true
+    if: |
+      github.ref == 'refs/heads/uat' &&
+      github.event_name == 'push' &&
+      github.event.pull_request.merged == true
     uses: ./.github/workflows/plan.yml
     secrets: inherit
     # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
