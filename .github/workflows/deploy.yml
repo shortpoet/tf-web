@@ -68,3 +68,4 @@ jobs:
     # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
     with:
       base_path: .iac/deploy/aws
+      infra_type: deploy

@@ -7,6 +7,10 @@ on:
         description: 'Specifies the path of the root terraform module.'
         required: true
         type: string
+      infra_type:
+        description: 'Specifies the type of deployment. Used for plan title.'
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -36,7 +40,18 @@ jobs:
           has_tag=$([[ ${{ github.ref }} =~ ^refs\/tags\/v[0-9]+\.[0-9]+\.[0-9]+$ ]] && echo 'true' || echo 'false')
           echo "has_tag = $has_tag"
           echo "has_tag=$has_tag" >> $GITHUB_OUTPUT
-
+  aws-creds:
+    runs-on: ubuntu-latest
+    steps:
+      - name: AWS Credentials
+        uses: ./.github/actions/aws-creds
+        with:
+          aws-profile: ${{ vars.AWS_PROFILE }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.AWS_DEFAULT_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-duration-seconds: 1200
   # build-title:
   #   runs-on: ubuntu-latest
   #   outputs:
@@ -52,12 +67,13 @@ jobs:
     if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
     uses: ./.github/workflows/plan.yml
     secrets: inherit
+    needs: [aws-creds]
     # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
     with:
       provider: 'aws'
       gh_environment: 'dev'
       path: ${{ inputs.base_path }}/envs/dev
-      plan-title: "AWS ${{ inputs.gh_environment }} Deploy Plan"
+      plan-title: "AWS ${{ inputs.gh_environment }} ${{ inputs.infra_type }} plan"
 
   aws-deploy-dev:
     if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
@@ -82,7 +98,7 @@ jobs:
       provider: 'aws'
       gh_environment: 'uat'
       path: ${{ inputs.base_path }}/envs/uat
-      plan-title: 'AWS UAT Deploy Plan'
+      plan-title: "AWS ${{ inputs.gh_environment }} ${{ inputs.infra_type }} plan"
 
   aws-deploy-uat:
     if: |
@@ -108,7 +124,7 @@ jobs:
       provider: 'aws'
       gh_environment: 'prod'
       path: ${{ inputs.base_path }}/envs/prod
-      plan-title: 'AWS Prod Deploy Plan'
+      plan-title: "AWS ${{ inputs.gh_environment }} ${{ inputs.infra_type }} plan"
 
   aws-deploy-prod:
     if: |
