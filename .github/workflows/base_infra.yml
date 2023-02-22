@@ -77,8 +77,9 @@ jobs:
   deploy-aws:
     uses: ./.github/workflows/aws.yml
     secrets: inherit
+    needs: paths-filter
     # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
-    if: steps.filter.outputs.base_infra == 'true'
+    if: needs.paths-filter.outputs.base_infra == 'true'
     with:
       base_path: .iac/infra_base/aws
       infra_type: base
