@@ -3,7 +3,6 @@ name: App Infra
 
 on:
   pull_request:
-    # types: [ closed ]
     branches:
       - main
       - uat
@@ -38,15 +37,7 @@ permissions:
   contents: read
   pull-requests: write
 
-jobs:
-  # dump-context:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Dump GitHub context
-  #       env:
-  #         GITHUB_CONTEXT: ${{ toJson(github) }}
-  #       run: echo "$GITHUB_CONTEXT"
-  
+jobs:  
   paths-filter:
     if:
       (
@@ -72,9 +63,7 @@ jobs:
               - '.github/workflows/infra-app.yml'
 
   deploy-aws:
-    # uses: ./.github/workflows/deploy.yml
     uses: shortpoet/.github/.github/workflows/deploy-dev_push-uat_merge-prod_release.yml@main
-    # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
     secrets: inherit
     needs: paths-filter
     # can't seem to use if release here because of needs
