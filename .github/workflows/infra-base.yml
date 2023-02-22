@@ -55,6 +55,10 @@ permissions:
 
 jobs:
   paths-filter:
+    if:
+      (github.event_name == 'pull_request' && github.ref == 'uat') ||
+      (github.event_name == 'push' && github.ref != 'uat') ||
+      github.event_name == 'release'
     outputs:
       infra_base: ${{ steps.filter.outputs.infra_base }}
     runs-on: ubuntu-latest
