@@ -11,13 +11,6 @@ on:
     paths:
       - '.iac/infra_base/**'
       - '.github/workflows/infra-base.yml'
-      - '.github/workflows/deploy.yml'
-      - '.github/workflows/changed-files.yml'
-      - '.github/workflows/plan.yml'
-      - '.github/workflows/apply.yml'
-      - '.github/actions/dump-context/action.yml'
-      - '.github/actions/changed-files/action.yml'
-      - '.github/actions/aws-creds/action.yml'
   push:
     branches:
       - main
@@ -26,13 +19,6 @@ on:
     paths:
       - '.iac/infra_base/**'
       - '.github/workflows/infra-base.yml'
-      - '.github/workflows/deploy.yml'
-      - '.github/workflows/changed-files.yml'
-      - '.github/workflows/plan.yml'
-      - '.github/workflows/apply.yml'
-      - '.github/actions/dump-context/action.yml'
-      - '.github/actions/changed-files/action.yml'
-      - '.github/actions/aws-creds/action.yml'
     tags:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
   release:
@@ -41,13 +27,6 @@ on:
     paths:
       - '.iac/infra_base/**'
       - '.github/workflows/infra-base.yml'
-      - '.github/workflows/deploy.yml'
-      - '.github/workflows/changed-files.yml'
-      - '.github/workflows/plan.yml'
-      - '.github/workflows/apply.yml'
-      - '.github/actions/dump-context/action.yml'
-      - '.github/actions/changed-files/action.yml'
-      - '.github/actions/aws-creds/action.yml'
 
 permissions:
   contents: read
@@ -85,13 +64,6 @@ jobs:
             infra_base:
               - '.iac/infra_base/aws/**'
               - '.github/workflows/infra-base.yml'
-              - '.github/workflows/deploy.yml'
-              - '.github/workflows/changed-files.yml'
-              - '.github/workflows/plan.yml'
-              - '.github/workflows/apply.yml'
-              - '.github/actions/dump-context/action.yml'
-              - '.github/actions/changed-files/action.yml'
-              - '.github/actions/aws-creds/action.yml'
   
   deploy-aws:
     # uses: ./.github/workflows/deploy.yml

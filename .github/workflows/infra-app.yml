@@ -9,15 +9,8 @@ on:
       - uat
       - develop
     paths:
-      - '.iac/infra-app/**'
+      - '.iac/infra_app/**'
       - '.github/workflows/infra-app.yml'
-      - '.github/workflows/deploy.yml'
-      - '.github/workflows/changed-files.yml'
-      - '.github/workflows/plan.yml'
-      - '.github/workflows/apply.yml'
-      - '.github/actions/dump-context/action.yml'
-      - '.github/actions/changed-files/action.yml'
-      - '.github/actions/aws-creds/action.yml'
       - 'shortpoet_site/**'
       - 'tic_tac_toe/**'
   push:
@@ -28,13 +21,6 @@ on:
     paths:
       - '.iac/infra_app/**'
       - '.github/workflows/infra-app.yml'
-      - '.github/workflows/deploy.yml'
-      - '.github/workflows/changed-files.yml'
-      - '.github/workflows/plan.yml'
-      - '.github/workflows/apply.yml'
-      - '.github/actions/dump-context/action.yml'
-      - '.github/actions/changed-files/action.yml'
-      - '.github/actions/aws-creds/action.yml'
       - 'shortpoet_site/**'
       - 'tic_tac_toe/**'
     tags:
@@ -45,13 +31,6 @@ on:
     paths:
       - '.iac/infra_app/**'
       - '.github/workflows/infra-app.yml'
-      - '.github/workflows/deploy.yml'
-      - '.github/workflows/changed-files.yml'
-      - '.github/workflows/plan.yml'
-      - '.github/workflows/apply.yml'
-      - '.github/actions/dump-context/action.yml'
-      - '.github/actions/changed-files/action.yml'
-      - '.github/actions/aws-creds/action.yml'
       - 'shortpoet_site/**'
       - 'tic_tac_toe/**'
 
@@ -91,13 +70,6 @@ jobs:
             infra_app:
               - '.iac/infra_app/aws/**'
               - '.github/workflows/infra-app.yml'
-              - '.github/workflows/deploy.yml'
-              - '.github/workflows/changed-files.yml'
-              - '.github/workflows/plan.yml'
-              - '.github/workflows/apply.yml'
-              - '.github/actions/dump-context/action.yml'
-              - '.github/actions/changed-files/action.yml'
-              - '.github/actions/aws-creds/action.yml'
 
   deploy-aws:
     # uses: ./.github/workflows/deploy.yml
