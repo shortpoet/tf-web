@@ -56,7 +56,7 @@ jobs:
               - '.iac/infra_base/aws/**'
               - '.github/workflows/infra-base.yml'
   
-  deploy-aws:
+  deploy:
     uses: shortpoet/.github/.github/workflows/deploy-dev_push-uat_merge-prod_release.yml@main
     secrets: inherit
     needs: paths-filter
