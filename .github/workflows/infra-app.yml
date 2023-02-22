@@ -69,8 +69,7 @@ jobs:
         github.base_ref == 'main' &&
         github.event_name == 'pull_request')
       ) ||
-      (github.event_name == 'push' && github.ref == 'refs/heads/develop') ||
-      github.event_name == 'release'
+      (github.event_name == 'push' && github.ref == 'refs/heads/develop')
     outputs:
       infra_app: ${{ steps.filter.outputs.infra_app }}
     runs-on: ubuntu-latest
@@ -96,7 +95,9 @@ jobs:
     secrets: inherit
     # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
     needs: paths-filter
-    if: ${{ needs.paths-filter.outputs.infra_app == 'true' }}
+    if: |
+      needs.paths-filter.outputs.infra_base == 'true' ||
+      github.event_name == 'release'
     with:
       base_path: .iac/infra_app/aws
       infra_type: App
