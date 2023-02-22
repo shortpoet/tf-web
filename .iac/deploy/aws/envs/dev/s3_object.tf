@@ -24,5 +24,4 @@ module "s3_object_dev" {
   force_destroy    = true
 
   tags = module.common_vars.tags
-
 }
