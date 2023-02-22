@@ -75,6 +75,7 @@ jobs:
       provider: ${{ inputs.provider }}
       gh_environment: 'dev'
       path: ${{ inputs.base_path }}/envs/dev
+      infra_type: ${{ inputs.infra_type }}
 
   plan-uat:
     if: |
@@ -102,6 +103,7 @@ jobs:
       provider: ${{ inputs.provider }}
       gh_environment: 'uat'
       path: ${{ inputs.base_path }}/envs/uat
+      infra_type: ${{ inputs.infra_type }}
 
   plan-prod:
     if: |
@@ -129,3 +131,4 @@ jobs:
       provider: ${{ inputs.provider }}
       gh_environment: 'prod'
       path: ${{ inputs.base_path }}/envs/prod
+      infra_type: ${{ inputs.infra_type }}
