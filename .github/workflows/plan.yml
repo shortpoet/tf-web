@@ -49,10 +49,20 @@ jobs:
       TF_LOG_PATH: tf.log
       TF_IN_AUTOMATION: true
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3.3.0
+
+      - name: AWS Credentials
+        if: ${{ inputs.provider == 'aws' }}
+        uses: ./.github/actions/aws-creds
+        with:
+          aws-profile: ${{ vars.AWS_PROFILE }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.AWS_DEFAULT_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-duration-seconds: 1200
 
       # - name: Scan IaC - tfsec
       #   if: ${{ inputs.ENABLE_TFSEC == 'true' }}

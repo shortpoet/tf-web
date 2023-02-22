@@ -1,5 +1,5 @@
 ---
-name: Base Infra
+name: App Infra
 
 on:
   pull_request:
@@ -9,8 +9,8 @@ on:
       - uat
       - develop
     paths:
-      - '.iac/base_infra/**'
-      - '.github/workflows/base_infra.yml'
+      - '.iac/infra-app/**'
+      - '.github/workflows/infra-app.yml'
       - '.github/workflows/aws.yml'
       - '.github/workflows/changed-files.yml'
       - '.github/workflows/plan.yml'
@@ -18,14 +18,16 @@ on:
       - '.github/actions/dump-context/action.yml'
       - '.github/actions/changed-files/action.yml'
       - '.github/actions/aws-creds/action.yml'
+      - 'shortpoet_site/**'
+      - 'tic_tac_toe/**'
   push:
     branches:
       - main
       - uat
       - develop
     paths:
-      - '.iac/base_infra/**'
-      - '.github/workflows/base_infra.yml'
+      - '.iac/infra_app/**'
+      - '.github/workflows/infra-app.yml'
       - '.github/workflows/aws.yml'
       - '.github/workflows/changed-files.yml'
       - '.github/workflows/plan.yml'
@@ -33,21 +35,24 @@ on:
       - '.github/actions/dump-context/action.yml'
       - '.github/actions/changed-files/action.yml'
       - '.github/actions/aws-creds/action.yml'
+      - 'shortpoet_site/**'
+      - 'tic_tac_toe/**'
     tags:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
   release:
     types:
       - published
     paths:
-      - '.iac/base_infra/**'
-      - '.github/workflows/base_infra.yml'
-      - '.github/workflows/aws.yml'
+      - '.iac/infra_app/**'
+      - '.github/workflows/infra-app.yml'
       - '.github/workflows/changed-files.yml'
       - '.github/workflows/plan.yml'
       - '.github/workflows/apply.yml'
       - '.github/actions/dump-context/action.yml'
       - '.github/actions/changed-files/action.yml'
       - '.github/actions/aws-creds/action.yml'
+      - 'shortpoet_site/**'
+      - 'tic_tac_toe/**'
 
 permissions:
   contents: read
@@ -56,7 +61,7 @@ permissions:
 jobs:
   paths-filter:
     outputs:
-      base_infra: ${{ steps.filter.outputs.base_infra }}
+      infra_app: ${{ steps.filter.outputs.infra_app }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -64,9 +69,9 @@ jobs:
         id: filter
         with:
           filters: |
-            base_infra:
-              - '.iac/base_infra/aws/**'
-              - '.github/workflows/base_infra.yml'
+            infra_app:
+              - '.iac/infra_app/aws/**'
+              - '.github/workflows/infra_app.yml'
               - '.github/workflows/aws.yml'
               - '.github/workflows/changed-files.yml'
               - '.github/workflows/plan.yml'
@@ -74,13 +79,14 @@ jobs:
               - '.github/actions/dump-context/action.yml'
               - '.github/actions/changed-files/action.yml'
               - '.github/actions/aws-creds/action.yml'
+
   deploy-aws:
     uses: ./.github/workflows/aws.yml
     secrets: inherit
-    needs: paths-filter
     # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
-    if: needs.paths-filter.outputs.base_infra == 'true'
+    needs: paths-filter
+    if: ${{ needs.paths-filter.outputs.infra_app == 'true' }}
     with:
-      base_path: .iac/infra_base/aws
-      infra_type: base
+      base_path: .iac/infra_app/aws
+      infra_type: app
       provider: aws
