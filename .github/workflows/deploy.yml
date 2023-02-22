@@ -1,5 +1,5 @@
 ---
-name: "AWS"
+name: "Deploy"
 on:
   workflow_call:
     inputs:
@@ -55,7 +55,7 @@ jobs:
   #         plan_title="AWS ${{ inputs.gh_environment }} Deploy Plan"
   #         echo "plan_title=$has_tag" >> $GITHUB_OUTPUT
 
-  aws-plan-dev:
+  plan-dev:
     if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
     uses: ./.github/workflows/plan.yml
     secrets: inherit
@@ -66,17 +66,17 @@ jobs:
       path: ${{ inputs.base_path }}/envs/dev
       plan-title: "AWS ${{ inputs.gh_environment }} ${{ inputs.infra_type }} plan"
 
-  aws-apply-dev:
+  apply-dev:
     if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
     uses: ./.github/workflows/apply.yml
     secrets: inherit
-    needs: [aws-plan-dev]
+    needs: [plan-dev]
     with:
       provider: ${{ inputs.provider }}
       gh_environment: 'dev'
       path: ${{ inputs.base_path }}/envs/dev
 
-  aws-plan-uat:
+  plan-uat:
     if: |
       (startsWith(github.ref, 'refs/pull') &&
       endsWith(github.ref, '/merge') &&
@@ -91,40 +91,40 @@ jobs:
       path: ${{ inputs.base_path }}/envs/uat
       plan-title: "AWS ${{ inputs.gh_environment }} ${{ inputs.infra_type }} plan"
 
-  aws-apply-uat:
+  apply-uat:
     if: |
       github.ref == 'refs/heads/main' &&
       github.event_name == 'push'
     uses: ./.github/workflows/apply.yml
     secrets: inherit
-    # needs: [aws-plan-uat, aws-apply-dev]
+    # needs: [plan-uat, apply-dev]
     with:
       provider: ${{ inputs.provider }}
       gh_environment: 'uat'
       path: ${{ inputs.base_path }}/envs/uat
 
-  aws-plan-prod:
+  plan-prod:
     if: |
       (needs.check-tag.outputs.has_tag == 'true' &&
       github.event_name == 'release')
     uses: ./.github/workflows/plan.yml
     secrets: inherit
     needs : [check-tag]
-    # needs : [aws-apply-uat, check-tag]
+    # needs : [apply-uat, check-tag]
     with:
       provider: ${{ inputs.provider }}
       gh_environment: 'prod'
       path: ${{ inputs.base_path }}/envs/prod
       plan-title: "AWS ${{ inputs.gh_environment }} ${{ inputs.infra_type }} plan"
 
-  aws-apply-prod:
+  apply-prod:
     if: |
       needs.check-tag.outputs.has_tag == 'true' &&
       github.event_name == 'release'
     uses: ./.github/workflows/apply.yml
     secrets: inherit
     # needs : [check-tag]
-    needs : [aws-plan-prod, check-tag]
+    needs : [plan-prod, check-tag]
     with:
       provider: ${{ inputs.provider }}
       gh_environment: 'prod'

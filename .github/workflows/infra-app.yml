@@ -11,7 +11,7 @@ on:
     paths:
       - '.iac/infra-app/**'
       - '.github/workflows/infra-app.yml'
-      - '.github/workflows/aws.yml'
+      - '.github/workflows/deploy.yml'
       - '.github/workflows/changed-files.yml'
       - '.github/workflows/plan.yml'
       - '.github/workflows/apply.yml'
@@ -28,6 +28,7 @@ on:
     paths:
       - '.iac/infra_app/**'
       - '.github/workflows/infra-app.yml'
+      - '.github/workflows/deploy.yml'
       - '.github/workflows/aws.yml'
       - '.github/workflows/changed-files.yml'
       - '.github/workflows/plan.yml'
@@ -45,6 +46,7 @@ on:
     paths:
       - '.iac/infra_app/**'
       - '.github/workflows/infra-app.yml'
+      - '.github/workflows/deploy.yml'
       - '.github/workflows/changed-files.yml'
       - '.github/workflows/plan.yml'
       - '.github/workflows/apply.yml'
@@ -72,7 +74,7 @@ jobs:
             infra_app:
               - '.iac/infra_app/aws/**'
               - '.github/workflows/infra_app.yml'
-              - '.github/workflows/aws.yml'
+              - '.github/workflows/deploy.yml'
               - '.github/workflows/changed-files.yml'
               - '.github/workflows/plan.yml'
               - '.github/workflows/apply.yml'

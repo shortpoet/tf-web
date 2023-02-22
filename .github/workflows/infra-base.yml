@@ -11,7 +11,7 @@ on:
     paths:
       - '.iac/infra_base/**'
       - '.github/workflows/infra-base.yml'
-      - '.github/workflows/aws.yml'
+      - '.github/workflows/deploy.yml'
       - '.github/workflows/changed-files.yml'
       - '.github/workflows/plan.yml'
       - '.github/workflows/apply.yml'
@@ -26,7 +26,7 @@ on:
     paths:
       - '.iac/infra_base/**'
       - '.github/workflows/infra-base.yml'
-      - '.github/workflows/aws.yml'
+      - '.github/workflows/deploy.yml'
       - '.github/workflows/changed-files.yml'
       - '.github/workflows/plan.yml'
       - '.github/workflows/apply.yml'
@@ -41,7 +41,7 @@ on:
     paths:
       - '.iac/infra_base/**'
       - '.github/workflows/infra-base.yml'
-      - '.github/workflows/aws.yml'
+      - '.github/workflows/deploy.yml'
       - '.github/workflows/changed-files.yml'
       - '.github/workflows/plan.yml'
       - '.github/workflows/apply.yml'
@@ -67,7 +67,7 @@ jobs:
             infra_base:
               - '.iac/infra_base/aws/**'
               - '.github/workflows/infra-base.yml'
-              - '.github/workflows/aws.yml'
+              - '.github/workflows/deploy.yml'
               - '.github/workflows/changed-files.yml'
               - '.github/workflows/plan.yml'
               - '.github/workflows/apply.yml'
@@ -76,7 +76,7 @@ jobs:
               - '.github/actions/aws-creds/action.yml'
   
   deploy-aws:
-    uses: ./.github/workflows/aws.yml
+    uses: ./.github/workflows/deploy.yml
     secrets: inherit
     needs: paths-filter
     # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
