@@ -95,7 +95,7 @@ jobs:
   
   deploy-aws:
     # uses: ./.github/workflows/deploy.yml
-    uses: shortpoet/.github/workflows/deploy-dev_push-uat_merge-prod_release.yml@main
+    uses: shortpoet/.github/.github/workflows/deploy-dev_push-uat_merge-prod_release.yml@main
     # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
     secrets: inherit
     needs: paths-filter
