@@ -3,21 +3,13 @@ name: App Infra
 
 on:
   pull_request:
-    # types: [ closed ]
     branches:
       - main
       - uat
       - develop
     paths:
-      - '.iac/infra-app/**'
+      - '.iac/infra_app/**'
       - '.github/workflows/infra-app.yml'
-      - '.github/workflows/deploy.yml'
-      - '.github/workflows/changed-files.yml'
-      - '.github/workflows/plan.yml'
-      - '.github/workflows/apply.yml'
-      - '.github/actions/dump-context/action.yml'
-      - '.github/actions/changed-files/action.yml'
-      - '.github/actions/aws-creds/action.yml'
       - 'shortpoet_site/**'
       - 'tic_tac_toe/**'
   push:
@@ -28,13 +20,6 @@ on:
     paths:
       - '.iac/infra_app/**'
       - '.github/workflows/infra-app.yml'
-      - '.github/workflows/deploy.yml'
-      - '.github/workflows/changed-files.yml'
-      - '.github/workflows/plan.yml'
-      - '.github/workflows/apply.yml'
-      - '.github/actions/dump-context/action.yml'
-      - '.github/actions/changed-files/action.yml'
-      - '.github/actions/aws-creds/action.yml'
       - 'shortpoet_site/**'
       - 'tic_tac_toe/**'
     tags:
@@ -45,13 +30,6 @@ on:
     paths:
       - '.iac/infra_app/**'
       - '.github/workflows/infra-app.yml'
-      - '.github/workflows/deploy.yml'
-      - '.github/workflows/changed-files.yml'
-      - '.github/workflows/plan.yml'
-      - '.github/workflows/apply.yml'
-      - '.github/actions/dump-context/action.yml'
-      - '.github/actions/changed-files/action.yml'
-      - '.github/actions/aws-creds/action.yml'
       - 'shortpoet_site/**'
       - 'tic_tac_toe/**'
 
@@ -59,15 +37,7 @@ permissions:
   contents: read
   pull-requests: write
 
-jobs:
-  # dump-context:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Dump GitHub context
-  #       env:
-  #         GITHUB_CONTEXT: ${{ toJson(github) }}
-  #       run: echo "$GITHUB_CONTEXT"
-  
+jobs:  
   paths-filter:
     if:
       (
@@ -90,23 +60,15 @@ jobs:
           filters: |
             infra_app:
               - '.iac/infra_app/aws/**'
-              - '.github/workflows/infra_app.yml'
-              - '.github/workflows/deploy.yml'
-              - '.github/workflows/changed-files.yml'
-              - '.github/workflows/plan.yml'
-              - '.github/workflows/apply.yml'
-              - '.github/actions/dump-context/action.yml'
-              - '.github/actions/changed-files/action.yml'
-              - '.github/actions/aws-creds/action.yml'
+              - '.github/workflows/infra-app.yml'
 
   deploy-aws:
-    uses: ./.github/workflows/deploy.yml
+    uses: shortpoet/.github/.github/workflows/deploy-dev_push-uat_merge-prod_release.yml@main
     secrets: inherit
-    # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
     needs: paths-filter
     # can't seem to use if release here because of needs
     if: |
-      needs.paths-filter.outputs.infra_base == 'true' ||
+      needs.paths-filter.outputs.infra_app == 'true' ||
       github.event_name == 'release'
     with:
       base_path: .iac/infra_app/aws
