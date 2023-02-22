@@ -33,7 +33,7 @@ on:
         default: 'Terraform Plan'
 
 jobs:
-  build-plan:
+  plan:
     runs-on: ubuntu-latest
     # leaving this here makes the plan stage require approval
     # environment: ${{ inputs.gh_environment }}
