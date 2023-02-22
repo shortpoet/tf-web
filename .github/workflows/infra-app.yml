@@ -29,7 +29,6 @@ on:
       - '.iac/infra_app/**'
       - '.github/workflows/infra-app.yml'
       - '.github/workflows/deploy.yml'
-      - '.github/workflows/aws.yml'
       - '.github/workflows/changed-files.yml'
       - '.github/workflows/plan.yml'
       - '.github/workflows/apply.yml'
