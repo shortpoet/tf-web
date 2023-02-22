@@ -1,8 +1,5 @@
 ---
-name: Deploy
-
-env:
-  BASE_PATH: '.iac/deploy'
+name: App Infra
 
 on:
   pull_request:
@@ -12,7 +9,7 @@ on:
       - uat
       - develop
     paths:
-      - '.iac/deploy/**'
+      # - '.iac/app_infra/**'
       - '.github/workflows/deploy.yml'
       - '.github/workflows/aws.yml'
       - '.github/workflows/changed-files.yml'
@@ -29,7 +26,7 @@ on:
       - uat
       - develop
     paths:
-      - '.iac/deploy/**'
+      # - '.iac/app_infra/**'
       - '.github/workflows/deploy.yml'
       - '.github/workflows/aws.yml'
       - '.github/workflows/changed-files.yml'
@@ -46,7 +43,7 @@ on:
     types:
       - published
     paths:
-      - '.iac/deploy/**'
+      # - '.iac/app_infra/**'
       - '.github/workflows/deploy.yml'
       - '.github/workflows/changed-files.yml'
       - '.github/workflows/plan.yml'
@@ -69,3 +66,4 @@ jobs:
     with:
       base_path: .iac/infra_app/aws
       infra_type: app
+      provider: aws

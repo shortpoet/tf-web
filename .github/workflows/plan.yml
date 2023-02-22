@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       provider:
-        description: 'Specifies the cloud provider.'
+        description: 'Specifies the cloud provider for auth.'
         required: true
         type: string
       path:

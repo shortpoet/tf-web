@@ -12,7 +12,7 @@ on:
       - uat
       - develop
     paths:
-      - '.iac/infra/**'
+      - '.iac/base_infra/**'
       - '.github/workflows/infra.yml'
       - '.github/workflows/aws.yml'
       - '.github/workflows/changed-files.yml'
@@ -28,7 +28,7 @@ on:
       - uat
       - develop
     paths:
-      - '.iac/infra/**'
+      - '.iac/base_infra/**'
       - '.github/workflows/infra.yml'
       - '.github/workflows/aws.yml'
       - '.github/workflows/changed-files.yml'
@@ -44,7 +44,7 @@ on:
     types:
       - published
     paths:
-      - '.iac/infra/**'
+      - '.iac/base_infra/**'
       - '.github/workflows/infra.yml'
       - '.github/workflows/aws.yml'
       - '.github/workflows/changed-files.yml'
@@ -101,7 +101,7 @@ jobs:
     with:
       provider: 'aws'
       gh_environment: 'dev'
-      path: '.iac/infra/aws/envs/dev'
+      path: '.iac/base_infra/aws/envs/dev'
       plan-title: 'AWS Dev Infra Plan'
 
   aws-deploy-dev:
@@ -112,7 +112,7 @@ jobs:
     with:
       provider: 'aws'
       gh_environment: 'dev'
-      path: '.iac/infra/aws/envs/dev'
+      path: '.iac/base_infra/aws/envs/dev'
 
   aws-plan-uat:
     # this creates the plan as soon as the PR is merged from develop to uat
@@ -137,7 +137,7 @@ jobs:
     with:
       provider: 'aws'
       gh_environment: 'uat'
-      path: '.iac/infra/aws/envs/uat'
+      path: '.iac/base_infra/aws/envs/uat'
       plan-title: 'AWS UAT Infra Plan'
 
   aws-deploy-uat:
@@ -150,7 +150,7 @@ jobs:
     with:
       provider: 'aws'
       gh_environment: 'uat'
-      path: '.iac/infra/aws/envs/uat'
+      path: '.iac/base_infra/aws/envs/uat'
 
   aws-plan-prod:
     # run plan on both push and release also creates possbile race condition and might not be necessary
@@ -166,7 +166,7 @@ jobs:
     with:
       provider: 'aws'
       gh_environment: 'prod'
-      path: '.iac/infra/aws/envs/prod'
+      path: '.iac/base_infra/aws/envs/prod'
       plan-title: 'AWS Prod Infra Plan'
 
   aws-deploy-prod:
@@ -181,7 +181,7 @@ jobs:
     with:
       provider: 'aws'
       gh_environment: 'prod'
-      path: '.iac/infra/aws/envs/prod'
+      path: '.iac/base_infra/aws/envs/prod'
 
   # changed-files:
   #   uses: shortpoet/tf-web/.github/workflows/changed-files.yml@main

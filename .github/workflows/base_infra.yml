@@ -1,0 +1,64 @@
+---
+name: Base Infra
+
+on:
+  pull_request:
+    # types: [ closed ]
+    branches:
+      - main
+      - uat
+      - develop
+    paths:
+      - '.iac/base_infra/**'
+      - '.github/workflows/infra.yml'
+      - '.github/workflows/aws.yml'
+      - '.github/workflows/changed-files.yml'
+      - '.github/workflows/plan.yml'
+      - '.github/workflows/apply.yml'
+      - '.github/actions/dump-context/action.yml'
+      - '.github/actions/changed-files/action.yml'
+      - '.github/actions/aws-creds/action.yml'
+  push:
+    branches:
+      - main
+      - uat
+      - develop
+    paths:
+      - '.iac/base_infra/**'
+      - '.github/workflows/infra.yml'
+      - '.github/workflows/aws.yml'
+      - '.github/workflows/changed-files.yml'
+      - '.github/workflows/plan.yml'
+      - '.github/workflows/apply.yml'
+      - '.github/actions/dump-context/action.yml'
+      - '.github/actions/changed-files/action.yml'
+      - '.github/actions/aws-creds/action.yml'
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+  release:
+    types:
+      - published
+    paths:
+      - '.iac/base_infra/**'
+      - '.github/workflows/infra.yml'
+      - '.github/workflows/aws.yml'
+      - '.github/workflows/changed-files.yml'
+      - '.github/workflows/plan.yml'
+      - '.github/workflows/apply.yml'
+      - '.github/actions/dump-context/action.yml'
+      - '.github/actions/changed-files/action.yml'
+      - '.github/actions/aws-creds/action.yml'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  deploy-aws:
+    uses: ./.github/workflows/aws.yml
+    secrets: inherit
+    # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
+    with:
+      base_path: .iac/infra_base/aws
+      infra_type: base
+      provider: aws
