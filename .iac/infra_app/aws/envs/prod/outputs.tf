@@ -1,19 +1,19 @@
-output "site_domain" {
-  value = local.site_domain_root
+output "s3_bucket_object_ids" {
+  description = "The list of id of objects."
+  value       = module.s3_object_prod.s3_bucket_object_ids
 }
 
-output "s3" {
-  value = module.s3_root
+output "s3_bucket_object_etags" {
+  description = "The list of etag of objects."
+  value       = module.s3_object_prod.s3_bucket_object_etags
 }
 
-output "cloudflare" {
-  value = module.cloudflare_root
+output "s3_bucket_object_version_ids" {
+  description = "The list of version_id of objects."
+  value       = module.s3_object_prod.s3_bucket_object_version_ids
 }
 
-output "s3_www" {
-  value = module.s3_root_www
-}
-
-output "cloudflare_www" {
-  value = module.cloudflare_root_www
+output "s3_bucket_object_keys_ids" {
+  description = "The list of map containing id and aws s3 key of objects."
+  value       = module.s3_object_prod.s3_bucket_object_keys_ids
 }
