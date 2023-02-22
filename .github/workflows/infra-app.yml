@@ -23,7 +23,7 @@ on:
       - 'shortpoet_site/**'
       - 'tic_tac_toe/**'
     tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10 
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
   release:
     types:
       - published
@@ -62,7 +62,7 @@ jobs:
               - '.iac/infra_app/aws/**'
               - '.github/workflows/infra-app.yml'
 
-  deploy-aws:
+  deploy:
     uses: shortpoet/.github/.github/workflows/deploy-dev_push-uat_merge-prod_release.yml@main
     secrets: inherit
     needs: paths-filter
