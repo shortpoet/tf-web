@@ -101,7 +101,7 @@ jobs:
     with:
       provider: 'aws'
       gh_environment: 'dev'
-      path: $BASE_PATH/aws/envs/dev
+      path: ${{ env.BASE_PATH }}/aws/envs/dev
       plan-title: 'AWS Dev Plan'
 
   aws-deploy-dev:
@@ -112,7 +112,7 @@ jobs:
     with:
       provider: 'aws'
       gh_environment: 'dev'
-      path: $BASE_PATH/aws/envs/dev
+      path: ${{ env.BASE_PATH }}/aws/envs/dev
 
   aws-plan-uat:
     # this creates the plan as soon as the PR is merged from develop to uat
@@ -137,7 +137,7 @@ jobs:
     with:
       provider: 'aws'
       gh_environment: 'uat'
-      path: $BASE_PATH/aws/envs/uat
+      path: ${{ env.BASE_PATH }}/aws/envs/uat
       plan-title: 'AWS UAT Plan'
 
   aws-deploy-uat:
@@ -150,7 +150,7 @@ jobs:
     with:
       provider: 'aws'
       gh_environment: 'uat'
-      path: $BASE_PATH/aws/envs/uat
+      path: ${{ env.BASE_PATH }}/aws/envs/uat
 
   aws-plan-prod:
     # run plan on both push and release also creates possbile race condition and might not be necessary
@@ -166,7 +166,7 @@ jobs:
     with:
       provider: 'aws'
       gh_environment: 'prod'
-      path: $BASE_PATH/aws/envs/prod
+      path: ${{ env.BASE_PATH }}/aws/envs/prod
       plan-title: 'AWS Prod Plan'
 
   aws-deploy-prod:
@@ -181,7 +181,7 @@ jobs:
     with:
       provider: 'aws'
       gh_environment: 'prod'
-      path: $BASE_PATH/aws/envs/prod
+      path: ${{ env.BASE_PATH }}/aws/envs/prod
 
   # changed-files:
   #   uses: shortpoet/tf-web/.github/workflows/changed-files.yml@main
