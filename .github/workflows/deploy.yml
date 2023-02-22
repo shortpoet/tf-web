@@ -103,7 +103,7 @@ jobs:
       provider: 'aws'
       gh_environment: 'dev'
       path: .iac/deploy/aws/envs/dev
-      plan-title: 'AWS Dev Plan'
+      plan-title: 'AWS Dev Deploy Plan'
 
   aws-deploy-dev:
     if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
@@ -139,7 +139,7 @@ jobs:
       provider: 'aws'
       gh_environment: 'uat'
       path: .iac/deploy/aws/envs/uat
-      plan-title: 'AWS UAT Plan'
+      plan-title: 'AWS UAT Deploy Plan'
 
   aws-deploy-uat:
     if: |
@@ -168,7 +168,7 @@ jobs:
       provider: 'aws'
       gh_environment: 'prod'
       path: .iac/deploy/aws/envs/prod
-      plan-title: 'AWS Prod Plan'
+      plan-title: 'AWS Prod Deploy Plan'
 
   aws-deploy-prod:
       # startsWith(github.ref, 'refs/tags/v') &&
