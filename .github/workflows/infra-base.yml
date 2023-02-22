@@ -71,7 +71,8 @@ jobs:
         github.base_ref == 'main' &&
         github.event_name == 'pull_request')
       ) ||
-      (github.event_name == 'push' && github.ref == 'refs/heads/develop')
+      (github.event_name == 'push' && github.ref == 'refs/heads/develop') ||
+      github.event_name == 'release'
     outputs:
       infra_base: ${{ steps.filter.outputs.infra_base }}
     runs-on: ubuntu-latest
@@ -95,8 +96,9 @@ jobs:
   deploy-aws:
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
-    needs: paths-filter
     # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
+    needs: paths-filter
+    # can't seem to use if release here because of needs
     if: |
       needs.paths-filter.outputs.infra_base == 'true' ||
       github.event_name == 'release'
