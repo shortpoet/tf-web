@@ -59,7 +59,6 @@ jobs:
     if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
     uses: ./.github/workflows/plan.yml
     secrets: inherit
-    needs: [aws-creds]
     # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
     with:
       provider: ${{ inputs.provider }}
