@@ -67,5 +67,5 @@ jobs:
     secrets: inherit
     # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
     with:
-      base_path: .iac/deploy/aws
-      infra_type: deploy
+      base_path: .iac/infra_app/aws
+      infra_type: app
