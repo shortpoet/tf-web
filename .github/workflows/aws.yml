@@ -15,9 +15,6 @@ on:
         description: 'Specifies the cloud provider for auth.'
         required: true
         type: string
-    paths:
-      - '.iac/**/aws/**'
-
 
 permissions:
   contents: read
