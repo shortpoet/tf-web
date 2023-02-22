@@ -16,7 +16,7 @@ module "common_vars" {
 
 module "s3_object_dev" {
   source = "../../modules/s3_object"
-  bucket = data.terraform_remote_state.s3_bucket_dev.outputs.s3.id
+  bucket = data.terraform_remote_state.s3_bucket_dev.outputs.s3.website_bucket_id
 
   acl              = "public-read"
   cache_control    = "max-age=31536000, immutable"
