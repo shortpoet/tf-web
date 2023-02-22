@@ -48,26 +48,27 @@ resource "aws_s3_bucket_website_configuration" "site" {
     key = "index.html"
   }
 
-  routing_rules = jsonencode([
-    # {
-    #   Redirect = {
-    #     ReplaceKeyPrefixWith = "/"
-    #     HttpRedirectCode     = "301"
-    #   }
-    #   Condition = {
-    #     KeyPrefixEquals = "index.html"
-    #   }
-    # },
-    # {
-    #   Redirect = {
-    #     ReplaceKeyPrefixWith = ""
-    #     HttpRedirectCode     = "301"
-    #   }
-    #   Condition = {
-    #     KeyPrefixEquals = "docs/"
-    #   }
-    # },
-  ])
+  # routing_rules = jsonencode([
+  #   {
+  #     Redirect = {
+  #       ReplaceKeyPrefixWith = "/"
+  #       HttpRedirectCode     = "301"
+  #     }
+  #     Condition = {
+  #       KeyPrefixEquals = "index.html"
+  #     }
+  #   },
+  #   {
+  #     Redirect = {
+  #       ReplaceKeyPrefixWith = ""
+  #       HttpRedirectCode     = "301"
+  #     }
+  #     Condition = {
+  #       KeyPrefixEquals = "docs/"
+  #     }
+  #   },
+  # ])
+
 }
 
 resource "aws_s3_bucket_cors_configuration" "example" {

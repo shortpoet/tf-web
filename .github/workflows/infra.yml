@@ -42,7 +42,7 @@ on:
     types:
       - published
     paths:
-      - '.iac/**'
+      - '.iac/infra/**'
       - '.github/workflows/infra.yml'
       - '.github/workflows/changed-files.yml'
       - '.github/workflows/plan.yml'
