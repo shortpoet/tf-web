@@ -79,7 +79,7 @@ jobs:
     needs: paths-filter
     # can't seem to use if release here because of needs
     if: |
-      needs.paths-filter.outputs.infra_base == 'true' ||
+      needs.paths-filter.outputs.infra_app == 'true' ||
       github.event_name == 'release'
     with:
       base_path: .iac/infra_app/aws
