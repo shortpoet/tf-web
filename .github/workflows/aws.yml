@@ -67,7 +67,7 @@ jobs:
       path: ${{ inputs.base_path }}/envs/dev
       plan-title: "AWS ${{ inputs.gh_environment }} ${{ inputs.infra_type }} plan"
 
-  aws-deploy-dev:
+  aws-apply-dev:
     if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
     uses: ./.github/workflows/apply.yml
     secrets: inherit
@@ -92,13 +92,13 @@ jobs:
       path: ${{ inputs.base_path }}/envs/uat
       plan-title: "AWS ${{ inputs.gh_environment }} ${{ inputs.infra_type }} plan"
 
-  aws-deploy-uat:
+  aws-apply-uat:
     if: |
       github.ref == 'refs/heads/main' &&
       github.event_name == 'push'
     uses: ./.github/workflows/apply.yml
     secrets: inherit
-    # needs: [aws-plan-uat, aws-deploy-dev]
+    # needs: [aws-plan-uat, aws-apply-dev]
     with:
       provider: ${{ inputs.provider }}
       gh_environment: 'uat'
@@ -111,14 +111,14 @@ jobs:
     uses: ./.github/workflows/plan.yml
     secrets: inherit
     needs : [check-tag]
-    # needs : [aws-deploy-uat, check-tag]
+    # needs : [aws-apply-uat, check-tag]
     with:
       provider: ${{ inputs.provider }}
       gh_environment: 'prod'
       path: ${{ inputs.base_path }}/envs/prod
       plan-title: "AWS ${{ inputs.gh_environment }} ${{ inputs.infra_type }} plan"
 
-  aws-deploy-prod:
+  aws-apply-prod:
     if: |
       needs.check-tag.outputs.has_tag == 'true' &&
       github.event_name == 'release'
