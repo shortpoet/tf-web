@@ -14,6 +14,7 @@ on:
     paths:
       - '.iac/infra/**'
       - '.github/workflows/infra.yml'
+      - '.github/workflows/aws.yml'
       - '.github/workflows/changed-files.yml'
       - '.github/workflows/plan.yml'
       - '.github/workflows/apply.yml'
@@ -29,6 +30,7 @@ on:
     paths:
       - '.iac/infra/**'
       - '.github/workflows/infra.yml'
+      - '.github/workflows/aws.yml'
       - '.github/workflows/changed-files.yml'
       - '.github/workflows/plan.yml'
       - '.github/workflows/apply.yml'
@@ -44,6 +46,7 @@ on:
     paths:
       - '.iac/infra/**'
       - '.github/workflows/infra.yml'
+      - '.github/workflows/aws.yml'
       - '.github/workflows/changed-files.yml'
       - '.github/workflows/plan.yml'
       - '.github/workflows/apply.yml'
