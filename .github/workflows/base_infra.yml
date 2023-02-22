@@ -55,6 +55,8 @@ permissions:
 
 jobs:
   paths-filter:
+    outputs:
+      base_infra: ${{ steps.filter.outputs.base_infra }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
