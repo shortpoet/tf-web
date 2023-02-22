@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       provider:
-        description: 'Specifies the cloud provider for auth.'
+        description: 'Specifies the cloud provider.'
         required: true
         type: string
       path:
@@ -21,6 +21,10 @@ on:
         required: false
         type: string
         default: null
+      # tf_vars_file:
+      #   description: 'Specifies the Terraform TFVARS file.'
+      #   required: true
+      #   type: string
       enable_TFSEC:
         description: '(Optional) Enables TFSEC IaC scans and code quality checks on Terraform configurations'
         required: false
@@ -31,9 +35,26 @@ on:
         required: false
         type: string
         default: 'Terraform Plan'
+      # GITHUB_TOKEN:
+      #   description: 'The secrets.GITHUB_TOKEN so that the action can create a comment on the PR'
+      #   required: true
+      #   type: string
+    # secrets:
+    #   arm_client_id:
+    #     description: 'Specifies the Azure ARM CLIENT ID.'
+    #     required: true
+    #   arm_client_secret:
+    #     description: 'Specifies the Azure ARM CLIENT SECRET.'
+    #     required: true
+    #   arm_subscription_id:
+    #     description: 'Specifies the Azure ARM SUBSCRIPTION ID.'
+    #     required: true
+    #   arm_tenant_id:
+    #     description: 'Specifies the Azure ARM TENANT ID.'
+    #     required: true
 
 jobs:
-  plan:
+  build-plan:
     runs-on: ubuntu-latest
     # leaving this here makes the plan stage require approval
     # environment: ${{ inputs.gh_environment }}
@@ -49,6 +70,15 @@ jobs:
       TF_LOG_PATH: tf.log
       TF_IN_AUTOMATION: true
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      # TF_VAR_client_id: ${{ secrets.arm_client_id }}
+      # TF_VAR_client_secret: ${{ secrets.arm_client_secret }}
+      # TF_VAR_subscription_id: ${{ secrets.arm_subscription_id }}
+      # TF_VAR_tenant_id: ${{ secrets.arm_tenant_id }}
+      # TF_VARS: ${{ inputs.tf_vars_file }}
+      # STORAGE_ACCOUNT: ${{ secrets.storage_account }}
+      # CONTAINER_NAME: ${{ secrets.container_name }}
+      # RESOURCE_GROUP: ${{ secrets.resource_group }}
+      # TF_KEY: ${{ secrets.tf_key }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3.3.0
@@ -88,6 +118,8 @@ jobs:
       - name: Terraform Init
         id: init
         run: terraform init -input=false
+        # run: terraform init -lockfile=readonly -input=false
+        # run: terraform init --backend-config="storage_account_name=$STORAGE_ACCOUNT" --backend-config="container_name=$CONTAINER_NAME" --backend-config="resource_group_name=$RESOURCE_GROUP" --backend-config="key=$TF_KEY"
 
       - name: Terraform Validate
         id: validate
@@ -96,7 +128,12 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: terraform plan --out=plan.tfplan
+        # run: terraform plan --var-file=$TF_VARS --out=plan.tfplan
         continue-on-error: true
+
+      # - name: Terraform Plan Output
+      #   if: always()
+      #   run: terraform show -json plan.tfplan > plan.json
 
       - name: Terraform Show
         id: show
@@ -104,6 +141,7 @@ jobs:
         shell: bash
 
       - name: Terraform Plan Output
+        # if: always()
         uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
         with:
@@ -144,12 +182,55 @@ jobs:
               })
             }
 
+      - name: add-plan-comment
+        id: comment
+        uses: actions/github-script@v6
+        # uses: actions/github-script@v3
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+              const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+              #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+              #### Terraform Validation 🤖${{ steps.validate.outputs.stdout }}
+              #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
+              <details><summary>Show Plan</summary>
+
+              \`\`\`${process.env.PLAN}\`\`\`
+
+              </details>
+
+              *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
+
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output
+              })
+
       - name: Terraform Plan Status
         if: steps.plan.outcome == 'failure'
         run: exit 1
 
       - name: Compress TF Plan artifact
         run: zip -r ${{ inputs.gh_environment }}.zip plan.tfplan .terraform .terraform.lock.hcl
+        # run: zip -r ${{ inputs.gh_environment }}.zip ./*
+        # run: zip -r ${{ inputs.gh_environment }}.zip ./* -x "*.git*" -x "*.terraform*"
+
+# https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
+      # - name: Save PR number
+      #   run: |
+      #     mkdir -p ./pr
+      #     echo ${{ github.event.number }} > ./pr/NR
+
+      # - uses: actions/upload-artifact@v2
+      #   with:
+      #     name: pr
+      #     path: pr/
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3.1.2

@@ -1,67 +1,27 @@
 ---
-name: Deploy
-
+name: "Deploy"
 on:
-  pull_request:
-    # types: [ closed ]
-    branches:
-      - main
-      - uat
-      - develop
-    paths:
-      - '.iac/deploy/**'
-      - '.github/workflows/deploy.yml'
-      - '.github/workflows/changed-files.yml'
-      - '.github/workflows/plan.yml'
-      - '.github/workflows/apply.yml'
-      - '.github/actions/dump-context/action.yml'
-      - '.github/actions/changed-files/action.yml'
-      - '.github/actions/aws-creds/action.yml'
-      - 'shortpoet_site/**'
-      - 'tic_tac_toe/**'
-  push:
-    branches:
-      - main
-      - uat
-      - develop
-    paths:
-      - '.iac/deploy/**'
-      - '.github/workflows/deploy.yml'
-      - '.github/workflows/changed-files.yml'
-      - '.github/workflows/plan.yml'
-      - '.github/workflows/apply.yml'
-      - '.github/actions/dump-context/action.yml'
-      - '.github/actions/changed-files/action.yml'
-      - '.github/actions/aws-creds/action.yml'
-      - 'shortpoet_site/**'
-      - 'tic_tac_toe/**'
-    tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
-  release:
-    types:
-      - published
-    paths:
-      - '.iac/deploy/**'
-      - '.github/workflows/deploy.yml'
-      - '.github/workflows/changed-files.yml'
-      - '.github/workflows/plan.yml'
-      - '.github/workflows/apply.yml'
-      - '.github/actions/dump-context/action.yml'
-      - '.github/actions/changed-files/action.yml'
-      - '.github/actions/aws-creds/action.yml'
-      - 'shortpoet_site/**'
-      - 'tic_tac_toe/**'
+  workflow_call:
+    inputs:
+      base_path:
+        description: 'Specifies the path of the root terraform module.'
+        required: true
+        type: string
+      infra_type:
+        description: 'Specifies the type of deployment. Used for plan title.'
+        required: true
+        type: string
+      provider:
+        description: 'Specifies the cloud provider for auth.'
+        required: true
+        type: string
+
 permissions:
   contents: read
   pull-requests: write
 
-env:
-  BASE_PATH: '.iac/deploy'
-
-
 jobs:
   dump-context:
-    # if: github.ref
     runs-on: ubuntu-latest
     steps:
       - name: Dump GitHub context
@@ -84,49 +44,39 @@ jobs:
           has_tag=$([[ ${{ github.ref }} =~ ^refs\/tags\/v[0-9]+\.[0-9]+\.[0-9]+$ ]] && echo 'true' || echo 'false')
           echo "has_tag = $has_tag"
           echo "has_tag=$has_tag" >> $GITHUB_OUTPUT
-
-  # debug-tag:
+  # build-title:
   #   runs-on: ubuntu-latest
-  #   needs: check-tag
-  #   # if: needs.check-tag.outputs.has_tag
+  #   outputs:
+  #     plan-title: ${{ steps.check-tag.outputs.has_tag }}
   #   steps:
-  #     - name: Debug tag
+  #     - name: Build Plan Title
+  #       id: plan-title
   #       run: |
-  #         echo ${{ needs.check-tag.outputs.has_tag }}
+  #         plan_title="AWS ${{ inputs.gh_environment }} Deploy Plan"
+  #         echo "plan_title=$has_tag" >> $GITHUB_OUTPUT
 
-  aws-plan-dev:
+  plan-dev:
     if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
     uses: ./.github/workflows/plan.yml
     secrets: inherit
     # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
     with:
-      provider: 'aws'
+      provider: ${{ inputs.provider }}
       gh_environment: 'dev'
-      path: .iac/deploy/aws/envs/dev
-      plan-title: 'AWS Dev Deploy Plan'
+      path: ${{ inputs.base_path }}/envs/dev
+      plan-title: "AWS ${{ inputs.gh_environment }} ${{ inputs.infra_type }} plan"
 
-  aws-deploy-dev:
+  apply-dev:
     if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
     uses: ./.github/workflows/apply.yml
     secrets: inherit
-    needs: [aws-plan-dev]
+    needs: [plan-dev]
     with:
-      provider: 'aws'
+      provider: ${{ inputs.provider }}
       gh_environment: 'dev'
-      path: .iac/deploy/aws/envs/dev
+      path: ${{ inputs.base_path }}/envs/dev
 
-  aws-plan-uat:
-    # this creates the plan as soon as the PR is merged from develop to uat
-    # if: |
-    #   github.ref == 'refs/heads/uat' &&
-    #   github.event_name == 'push'
-
-    # ||
-    # (github.ref == 'refs/heads/main' &&
-    # github.event_name == 'push')
-
-    # https://stackoverflow.com/questions/63594658/git-refs-merge-vs-head-in-pull-request
-    # 'refs/pull/[0-9]+/merge'
+  plan-uat:
     if: |
       (startsWith(github.ref, 'refs/pull') &&
       endsWith(github.ref, '/merge') &&
@@ -136,89 +86,46 @@ jobs:
     uses: ./.github/workflows/plan.yml
     secrets: inherit
     with:
-      provider: 'aws'
+      provider: ${{ inputs.provider }}
       gh_environment: 'uat'
-      path: .iac/deploy/aws/envs/uat
-      plan-title: 'AWS UAT Deploy Plan'
+      path: ${{ inputs.base_path }}/envs/uat
+      plan-title: "AWS ${{ inputs.gh_environment }} ${{ inputs.infra_type }} plan"
 
-  aws-deploy-uat:
+  apply-uat:
     if: |
       github.ref == 'refs/heads/main' &&
       github.event_name == 'push'
     uses: ./.github/workflows/apply.yml
     secrets: inherit
-    # needs: [aws-plan-uat, aws-deploy-dev]
+    # needs: [plan-uat, apply-dev]
     with:
-      provider: 'aws'
+      provider: ${{ inputs.provider }}
       gh_environment: 'uat'
-      path: .iac/deploy/aws/envs/uat
+      path: ${{ inputs.base_path }}/envs/uat
 
-  aws-plan-prod:
-    # run plan on both push and release also creates possbile race condition and might not be necessary
-    # (needs.check-tag.outputs.has_tag == 'true' &&
-    # github.event_name == 'push') ||
+  plan-prod:
     if: |
       (needs.check-tag.outputs.has_tag == 'true' &&
       github.event_name == 'release')
     uses: ./.github/workflows/plan.yml
     secrets: inherit
     needs : [check-tag]
-    # needs : [aws-deploy-uat, check-tag]
+    # needs : [apply-uat, check-tag]
     with:
-      provider: 'aws'
+      provider: ${{ inputs.provider }}
       gh_environment: 'prod'
-      path: .iac/deploy/aws/envs/prod
-      plan-title: 'AWS Prod Deploy Plan'
+      path: ${{ inputs.base_path }}/envs/prod
+      plan-title: "AWS ${{ inputs.gh_environment }} ${{ inputs.infra_type }} plan"
 
-  aws-deploy-prod:
-      # startsWith(github.ref, 'refs/tags/v') &&
+  apply-prod:
     if: |
       needs.check-tag.outputs.has_tag == 'true' &&
       github.event_name == 'release'
     uses: ./.github/workflows/apply.yml
     secrets: inherit
     # needs : [check-tag]
-    needs : [aws-plan-prod, check-tag]
+    needs : [plan-prod, check-tag]
     with:
-      provider: 'aws'
+      provider: ${{ inputs.provider }}
       gh_environment: 'prod'
-      path: .iac/deploy/aws/envs/prod
-
-  # changed-files:
-  #   uses: shortpoet/tf-web/.github/workflows/changed-files.yml@main
-
-  # debug-changed-files:
-  #   needs: changed-files
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     # - name: dump context
-  #     #   # reusable workflows should be referenced at the top-level `jobs.*.uses' key, not within steps
-  #     #   # uses: shortpoet/tf-web/.github/workflows/dump-context.yml@main
-  #     #   uses: shortpoet/tf-web/.github/actions/dump-context@main
-  #     - name: dump changed files
-  #       uses: shortpoet/tf-web/.github/actions/changed-files@main
-  #       id: dump-changed-files
-  #     - name: echo changed files needs
-  #       run: |
-  #         echo ${{ needs.changed-files.outputs.all }}
-  #         echo ${{ needs.changed-files.outputs.tf }}
-  #         echo ${{ needs.changed-files.outputs.yml }}
-  #     - name: echo changed files steps
-  #       run: |
-  #         echo ${{ steps.dump-changed-files.outputs.all }}
-  #         echo ${{ steps.dump-changed-files.outputs.tf }}
-  #         echo ${{ steps.dump-changed-files.outputs.yml }}
-
-      # github.event.pull_request.state == 'open' &&
-      # github.event.pull_request.draft == false &&
-      # github.event.pull_request.merged == false &&
-      # github.event.pull_request.mergeable_state == 'clean' &&
-      # github.event.pull_request.mergeable == true &&
-      # github.event.pull_request.merge_state_status == 'clean' &&
-      # github.event.pull_request.merge_commit_sha != '' &&
-      # github.event.pull_request.merge_commit_sha != null
-      # github.event_name == 'pull_request' &&
-      # github.event.pull_request.head.ref == 'develop' &&
-      # github.event.pull_request.base.ref == 'uat'
-      # github.event_name == 'push' &&
-    # if: github.event.pull_request.merged == true
+      path: ${{ inputs.base_path }}/envs/prod
