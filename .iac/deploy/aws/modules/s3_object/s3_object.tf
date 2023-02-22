@@ -1,10 +1,10 @@
 
-resource "random_pet" "this" {
-  length = 1
-  keepers = {
-    sse_encrypt = var.sse_encrypt
-  }
-}
+# resource "random_pet" "this" {
+#   length = 1
+#   keepers = {
+#     sse_encrypt = var.sse_encrypt
+#   }
+# }
 
 resource "aws_s3_bucket_object" "this" {
   for_each = local.website_files
@@ -35,7 +35,7 @@ resource "aws_s3_bucket_object" "this" {
   content_type = lookup(local.mime_types, regex("\\.[^.]+$", each.key), null)
   # content_type = data.external.get_mime[each.key].result.mime
   # content_type = var.set_auto_content_type ? length(regexall("^.*\\.(.*)", each.value)) > 0 ? lookup(local.extension_to_mime, element(regex("^.*\\.(.*)", each.value), 0), null) : null : var.content_type
-  depends_on = [var.module_depends_on]
+  depends_on = [local.module_depends_on]
 
-  tags = var.tags
+  tags = local.tags
 }

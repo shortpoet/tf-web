@@ -14,7 +14,7 @@ locals {
   #   key          = "${var.path_prefix.add}${trimprefix(each.value, var.path_prefix.remove)}"
   #   source       = "${var.source_prefix}/${each.value}"
   #   etag         = var.kms_key_id != "" && var.server_side_encryption != "" ? filemd5("${var.base_folder_path}/${each.value}") : null
-  #   content_type = var.set_auto_content_type ? length(regexall("^.*\\.(.*)", each.value)) > 0 ? lookup(local.extension_to_mime, element(regex("^.*\\.(.*)", each.value), 0), null) : null : var.content_type  
+  #   content_type = var.set_auto_content_type ? length(regexall("^.*\\.(.*)", each.value)) > 0 ? lookup(local.extension_to_mime, element(regex("^.*\\.(.*)", each.value), 0), null) : null : var.content_type
 
   base_folder_path  = var.base_folder_path
   file_glob_pattern = var.file_glob_pattern
@@ -44,9 +44,9 @@ locals {
     for filename in local.website_files :
     filename => filemd5("${local.base_folder_path}/${filename}")
   }
-  mime_types = jsondecode(file("mime.json"))
+  mime_types = jsondecode(file("${path.module}/mime.json"))
 
-  depends_on = [var.module_depends_on]
+  module_depends_on = [var.module_depends_on]
 
   tags = merge(
     var.tags,

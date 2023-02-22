@@ -54,28 +54,28 @@ variable "file_glob_pattern" {
 
 }
 
-variable "path_prefix" {
-  type = map(string)
-  default = {
-    remove = ""
-    add    = ""
-  }
-  description = "(Optional) A Map - value of `remove` key will remove the prefix from the paths identified after applying `file_glob_pattern` on `base_folder_path`. Value of `add` key will be added as prefix to paths which will act as object key"
-  # Example:
-  # > file_glob_pattern: "files/{hello,world}.txt" and path_prefix = {remove="folder_a/"  add="myfolder-"} 
-  # [
-  # "folder_a/hello.txt",  # key will be "myfolder-hello.txt"
-  # "folder_a/world.txt",  # key will be "myfolder-hello.txt"
-  # "hello.txt",           # key will be "hello.txt" 
-  # "folder_c/world.txt",  # key will be "folder_c/world.txt"
-  # ]
-}
+# variable "path_prefix" {
+#   type = map(string)
+#   default = {
+#     remove = ""
+#     add    = ""
+#   }
+#   description = "(Optional) A Map - value of `remove` key will remove the prefix from the paths identified after applying `file_glob_pattern` on `base_folder_path`. Value of `add` key will be added as prefix to paths which will act as object key"
+#   # Example:
+#   # > file_glob_pattern: "files/{hello,world}.txt" and path_prefix = {remove="folder_a/"  add="myfolder-"}
+#   # [
+#   # "folder_a/hello.txt",  # key will be "myfolder-hello.txt"
+#   # "folder_a/world.txt",  # key will be "myfolder-hello.txt"
+#   # "hello.txt",           # key will be "hello.txt"
+#   # "folder_c/world.txt",  # key will be "folder_c/world.txt"
+#   # ]
+# }
 
-variable "source_prefix" {
-  type        = string
-  default     = ""
-  description = "(Optional) Prefix to add before items found after applying glob pattern on `base_folder_path`. It will help terraform find location of `base_folder_path` for upload."
-}
+# variable "source_prefix" {
+#   type        = string
+#   default     = ""
+#   description = "(Optional) Prefix to add before items found after applying glob pattern on `base_folder_path`. It will help terraform find location of `base_folder_path` for upload."
+# }
 
 variable "acl" {
   description = "(Optional) The canned ACL to apply. Defaults to private."
@@ -101,11 +101,11 @@ variable "content_language" {
   default     = null
 }
 
-variable "content_type" {
-  description = "(Optional) A standard MIME type describing the format of the object data, e.g. application/octet-stream. All Valid MIME Types are valid for this input."
-  type        = string
-  default     = null
-}
+# variable "content_type" {
+#   description = "(Optional) A standard MIME type describing the format of the object data, e.g. application/octet-stream. All Valid MIME Types are valid for this input."
+#   type        = string
+#   default     = null
+# }
 
 variable "cache_control" {
   description = "(Optional) Specifies caching behavior along the request/reply chain Read w3c cache_control for further details."
@@ -113,11 +113,11 @@ variable "cache_control" {
   default     = null
 }
 
-variable "set_auto_content_type" {
-  description = "(Optional) If set to true, it will override content_type variable and set content-type based on file extensions."
-  type        = bool
-  default     = true
-}
+# variable "set_auto_content_type" {
+#   description = "(Optional) If set to true, it will override content_type variable and set content-type based on file extensions."
+#   type        = bool
+#   default     = true
+# }
 
 variable "storage_class" {
   description = "(Optional) Specifies the desired Storage Class for the object. Can be either STANDARD, REDUCED_REDUNDANCY, ONEZONE_IA, INTELLIGENT_TIERING, GLACIER, DEEP_ARCHIVE, or STANDARD_IA"
@@ -126,10 +126,16 @@ variable "storage_class" {
 }
 
 variable "server_side_encryption" {
-  description = " (Optional) Specifies server-side encryption of the object in S3. "
+  description = " (Optional) Specifies server-side encryption of the object in S3. Conflicts with etag and source_hash. Valid values are AES256, aws:kms, and aws:compliance. "
   type        = string
   default     = null
 }
+
+# variable "sse_encrypt" {
+#   type        = bool
+#   default     = true
+#   description = "Should we apply SSE for objects created by this module?"
+# }
 
 variable "kms_key_id" {
   description = "(Optional) Specifies the AWS KMS Key ARN to use for object encryption. This value is a fully qualified ARN of the KMS Key"
@@ -180,6 +186,7 @@ variable "object_lock_retain_until_date" {
 }
 
 variable "module_depends_on" {
-  type    = any
-  default = null
+  description = "(Optional) A list of dependencies. Any object that is created before this module can be referenced in this list"
+  type        = any
+  default     = null
 }
