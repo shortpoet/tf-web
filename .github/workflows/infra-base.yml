@@ -71,7 +71,7 @@ jobs:
         github.base_ref == 'main' &&
         github.event_name == 'pull_request')
       ) ||
-      (github.event_name == 'push' && github.ref != 'refs/heads/uat') ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/develop') ||
       github.event_name == 'release'
     outputs:
       infra_base: ${{ steps.filter.outputs.infra_base }}
