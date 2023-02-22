@@ -83,7 +83,7 @@ jobs:
               - '.github/actions/aws-creds/action.yml'
 
   deploy-aws:
-    uses: ./.github/workflows/aws.yml
+    uses: ./.github/workflows/deploy.yml
     secrets: inherit
     # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
     needs: paths-filter
