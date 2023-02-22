@@ -3,7 +3,7 @@ data "terraform_remote_state" "s3_bucket_dev" {
   config = {
     region         = "us-east-1"
     bucket         = "341864192726-terraform-backend"
-    key            = "tf-web/infra/aws/envs/dev/terraform.tfstate"
+    key            = "tf-web/infra_base/aws/envs/dev/terraform.tfstate"
     dynamodb_table = "terraform-backend-lock"
     profile        = "terraform-admin"
     encrypt        = "true"
