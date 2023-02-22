@@ -89,5 +89,5 @@ jobs:
     if: ${{ needs.paths-filter.outputs.infra_app == 'true' }}
     with:
       base_path: .iac/infra_app/aws
-      infra_type: app
+      infra_type: App
       provider: aws

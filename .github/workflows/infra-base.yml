@@ -83,5 +83,5 @@ jobs:
     if: needs.paths-filter.outputs.infra_base == 'true'
     with:
       base_path: .iac/infra_base/aws
-      infra_type: base
+      infra_type: Base
       provider: aws
