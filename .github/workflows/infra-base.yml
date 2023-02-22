@@ -56,7 +56,13 @@ permissions:
 jobs:
   paths-filter:
     if:
-      (github.event_name == 'pull_request' && github.ref == 'uat') ||
+      (
+        (startsWith(github.ref, 'refs/pull') &&
+        endsWith(github.ref, '/merge') &&
+        github.head_ref == 'uat' &&
+        github.base_ref == 'main' &&
+        github.event_name == 'pull_request')
+      ) ||
       (github.event_name == 'push' && github.ref != 'uat') ||
       github.event_name == 'release'
     outputs:
