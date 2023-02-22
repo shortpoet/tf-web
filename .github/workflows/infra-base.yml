@@ -19,7 +19,7 @@ on:
       - '.iac/infra_base/**'
       - '.github/workflows/infra-base.yml'
     tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10 #
   release:
     types:
       - published
