@@ -3,7 +3,6 @@ name: Base Infra
 
 on:
   pull_request:
-    # types: [ closed ]
     branches:
       - main
       - uat
@@ -11,13 +10,6 @@ on:
     paths:
       - '.iac/infra_base/**'
       - '.github/workflows/infra-base.yml'
-      - '.github/workflows/deploy.yml'
-      - '.github/workflows/changed-files.yml'
-      - '.github/workflows/plan.yml'
-      - '.github/workflows/apply.yml'
-      - '.github/actions/dump-context/action.yml'
-      - '.github/actions/changed-files/action.yml'
-      - '.github/actions/aws-creds/action.yml'
   push:
     branches:
       - main
@@ -26,13 +18,6 @@ on:
     paths:
       - '.iac/infra_base/**'
       - '.github/workflows/infra-base.yml'
-      - '.github/workflows/deploy.yml'
-      - '.github/workflows/changed-files.yml'
-      - '.github/workflows/plan.yml'
-      - '.github/workflows/apply.yml'
-      - '.github/actions/dump-context/action.yml'
-      - '.github/actions/changed-files/action.yml'
-      - '.github/actions/aws-creds/action.yml'
     tags:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
   release:
@@ -41,27 +26,12 @@ on:
     paths:
       - '.iac/infra_base/**'
       - '.github/workflows/infra-base.yml'
-      - '.github/workflows/deploy.yml'
-      - '.github/workflows/changed-files.yml'
-      - '.github/workflows/plan.yml'
-      - '.github/workflows/apply.yml'
-      - '.github/actions/dump-context/action.yml'
-      - '.github/actions/changed-files/action.yml'
-      - '.github/actions/aws-creds/action.yml'
 
 permissions:
   contents: read
   pull-requests: write
 
 jobs:
-  # dump-context:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Dump GitHub context
-  #       env:
-  #         GITHUB_CONTEXT: ${{ toJson(github) }}
-  #       run: echo "$GITHUB_CONTEXT"
-  
   paths-filter:
     if:
       (
@@ -85,18 +55,10 @@ jobs:
             infra_base:
               - '.iac/infra_base/aws/**'
               - '.github/workflows/infra-base.yml'
-              - '.github/workflows/deploy.yml'
-              - '.github/workflows/changed-files.yml'
-              - '.github/workflows/plan.yml'
-              - '.github/workflows/apply.yml'
-              - '.github/actions/dump-context/action.yml'
-              - '.github/actions/changed-files/action.yml'
-              - '.github/actions/aws-creds/action.yml'
   
   deploy-aws:
-    uses: ./.github/workflows/deploy.yml
+    uses: shortpoet/.github/.github/workflows/deploy-dev_push-uat_merge-prod_release.yml@main
     secrets: inherit
-    # uses: shortpoet/tf-web/.github/workflows/plan.yml@main
     needs: paths-filter
     # can't seem to use if release here because of needs
     if: |
