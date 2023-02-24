@@ -1,0 +1,72 @@
+---
+name: Base Infra
+
+on:
+  pull_request:
+    branches:
+      - main
+      - uat
+      - develop
+    paths:
+      - '.iac/infra_base/**'
+      - '.github/workflows/infra-base.yml'
+  push:
+    branches:
+      - main
+      - uat
+      - develop
+    paths:
+      - '.iac/infra_base/**'
+      - '.github/workflows/infra-base.yml'
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+  release:
+    types:
+      - published
+    paths:
+      - '.iac/infra_base/**'
+      - '.github/workflows/infra-base.yml'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  paths-filter:
+    if:
+      (
+        (startsWith(github.ref, 'refs/pull') &&
+        endsWith(github.ref, '/merge') &&
+        github.head_ref == 'uat' &&
+        github.base_ref == 'main' &&
+        github.event_name == 'pull_request')
+      ) ||
+      (github.event_name == 'push' &&
+        (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main')
+      ) ||
+      github.event_name == 'release'
+    outputs:
+      infra_base: ${{ steps.filter.outputs.infra_base }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            infra_base:
+              - '.iac/infra_base/aws/**'
+              - '.github/workflows/infra-base.yml'
+
+  deploy:
+    uses: shortpoet/.github/.github/workflows/deploy-dev_push-uat_merge-prod_release.yml@main
+    secrets: inherit
+    needs: paths-filter
+    # can't seem to use if release here because of needs
+    if: |
+      needs.paths-filter.outputs.infra_base == 'true' ||
+      github.event_name == 'release'
+    with:
+      base_path: .iac/infra_base/aws
+      infra_type: Base
+      provider: aws
