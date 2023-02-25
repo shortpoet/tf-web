@@ -89,7 +89,7 @@ jobs:
         working-directory: app
         run: |
           npm install --global vite
-          rm package-lock.json
+          [ -f pnpm-lock.yaml ] && pnpm i || npm i
           pnpm i
 
       - name: Build
