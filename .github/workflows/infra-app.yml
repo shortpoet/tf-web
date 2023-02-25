@@ -85,7 +85,7 @@ jobs:
 
       - name: Install dependencies
         env:
-          NODE_ENV: production
+          NODE_ENV: development
         working-directory: app
         run: |
           npm install --global vite pnpm
