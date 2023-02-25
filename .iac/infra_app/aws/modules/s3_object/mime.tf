@@ -2,6 +2,8 @@
 
 # locals {
 #   extension_to_mime = {
+#     "_headers"                 = "text/plain"
+#     "0"                        = "application/x-troff-zero"
 #     "1km"                      = "application/vnd.1000minds.decision-model+xml"
 #     "3dml"                     = "text/vnd.in3d.3dml"
 #     "3ds"                      = "image/x-3ds"
