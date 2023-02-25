@@ -5,13 +5,12 @@ set -e
 provider="${1:-aws}"
 env="${2:-dev}"
 
-help_me() {
+[[ "$*" == *--help* ]] && {
   echo "Usage: $0 [provider] [env]"
   echo "  provider: aws, gcp, azure"
   echo "  env: dev, prod"
   exit 0
 }
-[[ "$*" == *--help* ]] && help_me
 
 active_dir=$(pwd)
 script_dir=$(dirname "$0")
@@ -23,7 +22,6 @@ aws_profile='terraform-admin'
 
 [[ "$provider" != "aws" ]] && {
   echo "Only AWS is supported at this time"
-  help_me
   exit 1
 }
 
@@ -44,19 +42,16 @@ provider_credentials_check
 
 echo "Deploying to $provider/$env"
 
-cd "$repo_root/.iac/infra/$provider/envs/$env"
-# terraform init
-# terraform apply
+cd "$repo_root/.iac/$provider/envs/$env/infra"
+terraform init
+terraform apply
 site_domain=$(terraform output -raw site_domain)
 website_bucket_id=$(terraform output -json s3 | jq -r .website_bucket_id)
-if [[ "$env" == "prod" ]]; then
-  cd "$repo_root/tic_tac_toe"
-else
-  cd "$repo_root/shortpoet_site"
-fi
+cd "$repo_root/app"
+npm run build
 
 if [[ "$provider" == "aws" ]]; then
-  aws s3 cp --recursive --acl public-read --profile "$aws_profile" . "s3://$website_bucket_id"
+  aws s3 cp --recursive --acl public-read --profile "$aws_profile" ./dist "s3://$website_bucket_id"
 fi
 
 cd "$active_dir"
