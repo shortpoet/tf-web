@@ -24,3 +24,15 @@ variable "cname_proxied" {
   type        = bool
   default     = true
 }
+
+variable "worker_script_name" {
+  description = "The name of the worker script."
+  type        = string
+  default     = null
+}
+
+variable "worker_script" {
+  description = "The worker script."
+  type        = string
+  default     = null
+}

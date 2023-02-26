@@ -9,4 +9,7 @@ module "cloudflare_dev" {
   zone_name            = local.zone_name
   cname_name           = local.subdomain_dev
   cname_value_endpoint = module.s3_dev.website_endpoint
+
+  worker_script_name = "tf-web-test"
+  worker_script      = file("${path.module}/../../../../../workers/dist/index.js")
 }
