@@ -10,6 +10,7 @@ module "cloudflare_dev" {
   cname_name           = local.subdomain_dev
   cname_value_endpoint = module.s3_dev.website_endpoint
 
-  worker_script_name = "tf-web-test"
-  worker_script      = file("${path.module}/../../../../../workers/dist/index.js")
+  worker_script_name     = "tf-web-test"
+  worker_script_path     = "${path.module}/../../../../../workers/dist/index.js"
+  worker_script_root_dir = "${path.module}/../../../../../workers"
 }

@@ -1,4 +1,5 @@
 import type { ExportedHandlerFetchHandler, ExecutionContext } from '@cloudflare/workers-types';
+import ipaddr from 'ipaddr.js';
 
 export default {
 	far,
@@ -10,7 +11,7 @@ export default {
 		};
 		console.log(JSON.stringify(out, null, 2));
 		// return new Response(JSON.stringify(out, null, 2), {
-		// 	headers: { 'content-type': 'application/json;charset=UTF-8' },
+		//   headers: { 'content-type': 'application/json;charset=UTF-8' },
 		// });
 		// // return basic(request, env, ctx);
 		// return info(request, env, ctx);
@@ -36,6 +37,26 @@ function info(request: Request, env: unknown, ctx: ExecutionContext) {
 	});
 }
 
+function isInRange(ip: string, range: string) {
+	const ipAddr = ipaddr.parse(ip);
+	const rangeAddr = ipaddr.parseCIDR(range);
+	return ipAddr.match(rangeAddr);
+}
+
+const allowed_ipv4 = ['104.182.207.154/32'];
+
+const allowed_ipv6 = ['2600:1700:2890:1de0:0000:0000:0000:0000/64'];
+
+function hasAdminAccess(ipAddress: string) {
+	const isV6 = ipaddr.IPv6.isValid(ipAddress);
+	const isV4 = ipaddr.IPv4.isValid(ipAddress);
+	if (isV6) {
+		return allowed_ipv6.some(range => isInRange(ipAddress, range));
+	} else if (isV4) {
+		return allowed_ipv4.some(range => isInRange(ipAddress, range));
+	}
+}
+
 async function far(request: Request, env: unknown, ctx: ExecutionContext) {
 	let modifiedHeaders = new Headers();
 	modifiedHeaders.set('Content-Type', 'text/html');
@@ -46,13 +67,18 @@ async function far(request: Request, env: unknown, ctx: ExecutionContext) {
 		ctx,
 	};
 	console.log(JSON.stringify(out, null, 2));
-	if (true) {
-		// if (request.headers.get("cf-connecting-ip") !== "2600:1700:2890:1de0:50bd:4df9:1251:8823") {
+	const allowed = hasAdminAccess(request.headers.get('cf-connecting-ip') || '');
+	console.log('allowed');
+	console.log(allowed);
+	// if (true) {
+	if (allowed) {
+		// if (request.headers.get('x-real-ip') !== '2600:1700:2890:1de0:0000:0000:0000:0000/64') {
+		// if (request.headers.get('cf-connecting-ip') !== '2600:1700:2890:1de0/64') {
+		return fetch(request);
+	} else {
 		return new Response(maintPage(out), {
 			headers: modifiedHeaders,
 		});
-	} else {
-		return fetch(request);
 	}
 }
 function fetchAndReplace(request: Request, env: unknown, ctx: ExecutionContext) {
@@ -72,14 +98,14 @@ function fetchAndReplace(request: Request, env: unknown, ctx: ExecutionContext) 
 
 	// //Return maint page if you're not calling from a trusted IP
 	// if (request.headers.get('cf-connecting-ip') !== '2600:1700:2890:1de0:50bd:4df9:1251:8823') {
-	// 	// Return modified response.
-	// 	return new Response(maintPage(), {
-	// 		headers: modifiedHeaders,
-	// 	});
+	//   // Return modified response.
+	//   return new Response(maintPage(), {
+	//     headers: modifiedHeaders,
+	//   });
 	// } //Allow users from trusted into site
 	// else {
-	// 	//Fire all other requests directly to our WebServers
-	// 	return fetch(request);
+	//   //Fire all other requests directly to our WebServers
+	//   return fetch(request);
 	// }
 }
 

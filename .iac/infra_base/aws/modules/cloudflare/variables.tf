@@ -31,8 +31,14 @@ variable "worker_script_name" {
   default     = null
 }
 
-variable "worker_script" {
-  description = "The worker script."
+variable "worker_script_path" {
+  description = "The worker script path."
+  type        = string
+  default     = null
+}
+
+variable "worker_script_root_dir" {
+  description = "The root directory of the worker script."
   type        = string
   default     = null
 }
