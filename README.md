@@ -25,6 +25,7 @@
 ```bash
 aws_assume_role
 export CLOUDFLARE_API_TOKEN=$(pass Cloud/cloudflare/Terraform_Token)
+export CLOUDFLARE_ACCOUNT_ID=$(pass Cloud/cloudflare/account_id)
 cd aws
 terraform init
 terraform apply
