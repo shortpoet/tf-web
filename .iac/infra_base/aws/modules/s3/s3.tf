@@ -1,3 +1,7 @@
+data "cloudflare_ip_ranges" "cloudflare" {}
+data "aws_canonical_user_id" "current" {}
+data "aws_caller_identity" "current" {}
+
 locals {
   cloudflare_ips = [
     "173.245.48.0/20",
@@ -22,6 +26,8 @@ locals {
     "2a06:98c0::/29",
     "2c0f:f248::/32"
   ]
+
+  caller_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}"
   tags = merge(
     {
       Name = var.site_domain_bucket_name
@@ -108,7 +114,6 @@ resource "aws_s3_bucket_cors_configuration" "example" {
   }
 }
 
-data "aws_canonical_user_id" "current" {}
 
 resource "aws_s3_bucket_acl" "site" {
   bucket = aws_s3_bucket.site.id
@@ -150,34 +155,61 @@ resource "aws_s3_bucket_acl" "site" {
 
 }
 
+
+locals {
+  public_read_get_object = {
+    Sid       = "PublicReadGetObject"
+    Effect    = "Allow"
+    Principal = "*"
+    Action    = "s3:GetObject"
+    Resource = [
+      "${aws_s3_bucket.site.arn}/*",
+    ],
+    # Condition = {
+    #   StringEquals = {
+    #     "aws:Referer" = [
+    #       "https://${var.site_domain}/*",
+    #       "https://${var.site_domain}",
+    #     ]
+    #   }
+    # }
+    Condition = {
+      IpAddress = {
+        "aws:SourceIp" = local.cloudflare_ips
+      }
+    }
+  }
+  restrict_to_cloudflare_ips = {
+    Sid    = "RestrictToCloudflareIPs"
+    Effect = "Deny"
+    Action = "s3:*"
+    Resource = [
+      "${aws_s3_bucket.site.arn}",
+      "${aws_s3_bucket.site.arn}/*",
+    ]
+    NotPrincipal = {
+      Type = "*"
+      Identifier = [
+        "${local.caller_arn}:root",
+        "${local.caller_arn}:Administrator",
+      ]
+    }
+    Condition = {
+      NotIpAddress = {
+        "aws:SourceIp" = concat(data.cloudflare_ip_ranges.cloudflare.ipv4_cidr_blocks, data.cloudflare_ip_ranges.cloudflare.ipv6_cidr_blocks)
+      }
+    }
+  }
+
+}
 resource "aws_s3_bucket_policy" "site" {
   bucket = aws_s3_bucket.site.id
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      {
-        Sid       = "PublicReadGetObject"
-        Effect    = "Allow"
-        Principal = "*"
-        Action    = "s3:GetObject"
-        Resource = [
-          "${aws_s3_bucket.site.arn}/*",
-        ],
-        # Condition = {
-        #   StringEquals = {
-        #     "aws:Referer" = [
-        #       "https://${var.site_domain}/*",
-        #       "https://${var.site_domain}",
-        #     ]
-        #   }
-        # }
-        Condition = {
-          IpAddress = {
-            "aws:SourceIp" = local.cloudflare_ips
-          }
-        }
-      },
+      # local.public_read_get_object,
+      local.restrict_to_cloudflare_ips,
     ]
   })
 }
