@@ -1,7 +1,12 @@
 data "cloudflare_ip_ranges" "cloudflare" {}
 data "aws_canonical_user_id" "current" {}
 data "aws_caller_identity" "current" {}
-
+data "aws_iam_role" "terraform_admin" {
+  name = "terraform-admin"
+}
+data "aws_iam_user" "admin" {
+  user_name = "Administrator"
+}
 locals {
   cloudflare_ips = [
     "173.245.48.0/20",
@@ -187,16 +192,22 @@ locals {
       "${aws_s3_bucket.site.arn}",
       "${aws_s3_bucket.site.arn}/*",
     ]
-    NotPrincipal = {
-      Type = "*"
-      Identifier = [
-        "${local.caller_arn}:root",
-        "${local.caller_arn}:Administrator",
-      ]
-    }
+    # NotPrincipal = {
+    #   AWS = [
+    #     "${local.caller_arn}:root",
+    #     "${local.caller_arn}:user/Administrator",
+    #   ]
+    # }
+    Principal = "*"
     Condition = {
       NotIpAddress = {
         "aws:SourceIp" = concat(data.cloudflare_ip_ranges.cloudflare.ipv4_cidr_blocks, data.cloudflare_ip_ranges.cloudflare.ipv6_cidr_blocks)
+      },
+      StringNotLike = {
+        "aws:userId" = [
+          data.aws_iam_user.admin.user_id,
+          "${data.aws_iam_role.terraform_admin.unique_id}:*",
+        ]
       }
     }
   }
@@ -208,7 +219,7 @@ resource "aws_s3_bucket_policy" "site" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      # local.public_read_get_object,
+      local.public_read_get_object,
       local.restrict_to_cloudflare_ips,
     ]
   })
