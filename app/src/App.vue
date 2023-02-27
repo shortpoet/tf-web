@@ -8,7 +8,8 @@ const description = `
   I'm a software engineer and I love to learn new things.
   🕺
 `
-const image = `${import.meta.env.VITE_APP_URL}/og-image.png`
+const image = `https://${import.meta.env.VITE_APP_URL}/pwa-512x512.png`
+
 const imageType = 'image/png'
 const imageAlt = `A PWABuilder logo.`
 useHead({
