@@ -75,37 +75,12 @@ jobs:
       needs.paths-filter.outputs.infra_app == 'true' ||
       github.event_name == 'release'
     outputs:
-      build-artifact-uuid: ${{ steps.build-artifact-uuid.outputs.BUILD_ARTIFACT_UUID }}
+      build-artifact-uuid: ${{ steps.set-env.outputs.BUILD_ARTIFACT_UUID }}
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v3
-        with:
-          node-version: latest
-
-      - name: Install dependencies
-        env:
-          NODE_ENV: development
-        working-directory: app
-        run: |
-          npm install --global vite pnpm
-          pnpm i
-
-      - name: Build
-        working-directory: app
-        env:
-          NODE_ENV: production
-        run: |
-          pnpm run build-ci
-
-      - name: Compress build
-        working-directory: app
-        run: |
-          cd ${{ env.BUILD_DIR }}
-          zip -r ${{ env.BUILD_ARTIFACT }}.zip ./*
-
-      - name: Set build artifact UUID
-        id: build-artifact-uuid
+      - name: Set Env
+        id: set-env
         env:
           BUILD_ARTIFACT_UUID: build-${{ github.sha }}-${{ github.ref_name }}
           BUILD_ARTIFACT_UUID_UAT: build-${{ github.sha }}-${{ github.head_ref }}
@@ -116,13 +91,38 @@ jobs:
         run: |
           if [ "$IS_DEV" = true ]; then
             echo "BUILD_ARTIFACT_UUID=${BUILD_ARTIFACT_UUID}" >> $GITHUB_OUTPUT
+            echo "ENV=development" >> $GITHUB_ENV
           elif [ "$IS_MAIN" = true ]; then
             echo "BUILD_ARTIFACT_UUID=${BUILD_ARTIFACT_UUID}" >> $GITHUB_OUTPUT
+            echo "ENV=uat" >> $GITHUB_ENV
           elif [ "$IS_RELEASE" = 'true && true' ]; then
             echo "BUILD_ARTIFACT_UUID=${BUILD_ARTIFACT_UUID}" >> $GITHUB_OUTPUT
+            echo "ENV=production" >> $GITHUB_ENV
           elif [ "$IS_UAT" = 'true && true && true && true && true' ]; then
             echo "BUILD_ARTIFACT_UUID=${BUILD_ARTIFACT_UUID_UAT}" >> $GITHUB_OUTPUT
+            echo "ENV=uat" >> $GITHUB_ENV
           fi
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: latest
+
+      - name: Install dependencies
+        working-directory: app
+        run: |
+          npm install --global vite pnpm
+          pnpm i
+
+      - name: Build
+        working-directory: app
+        run: |
+          pnpm run build-ci --mode $ENV
+
+      - name: Compress build
+        working-directory: app
+        run: |
+          cd ${{ env.BUILD_DIR }}
+          zip -r ${{ env.BUILD_ARTIFACT }}.zip ./*
 
       - name: Upload build
         id: upload-build
