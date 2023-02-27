@@ -17,6 +17,7 @@ on:
     paths:
       - '.iac/infra_base/**'
       - '.github/workflows/infra-base.yml'
+      - 'workers/**'
   push:
     branches:
       - main
@@ -25,6 +26,7 @@ on:
     paths:
       - '.iac/infra_base/**'
       - '.github/workflows/infra-base.yml'
+      - 'workers/**'
     tags:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
   release:
@@ -33,6 +35,7 @@ on:
     paths:
       - '.iac/infra_base/**'
       - '.github/workflows/infra-base.yml'
+      - 'workers/**'
 
 permissions:
   contents: read
@@ -64,6 +67,7 @@ jobs:
             infra_base:
               - '.iac/infra_base/aws/**'
               - '.github/workflows/infra-base.yml'
+              - 'workers/**'
 
   build-node:
     runs-on: ubuntu-latest
