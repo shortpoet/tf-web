@@ -6,3 +6,4 @@ routes = [
   # { pattern = "test-worker.marshmallowmeat.com", custom_domain = true, zone_name = "marshmallowmeat.com" },
   # { pattern = "dev.marshmallowmeat.com/*", zone_name = "marshmallowmeat.com" }
 ]
+# local_upstream = { host = "localhost", port = 3000 }
