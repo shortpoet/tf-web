@@ -5,6 +5,7 @@
   "scripts": {
     "deploy": "wrangler publish src/index.ts",
     "build": "wrangler publish src/index.ts --dry-run --outdir=dist",
+    "build-ci": "wrangler publish src/index.ts --dry-run --outdir=dist",
     "dev": "wrangler dev src/index.ts --local",
     "test": "vitest",
     "start-stackblitz": "WRANGLER_SEND_METRICS=false wrangler dev src/index.ts --local"
