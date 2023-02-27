@@ -1,0 +1,9 @@
+name = "wrangler-next" # todo
+main = "./src/index.ts"
+compatibility_date = "2022-05-03"
+routes = [
+    # { pattern = "marshmallowmeat.com", zone_id = "45371d5e2e41b9575d6e48c8c614d895", custom_domain = true }
+  # { pattern = "test-worker.marshmallowmeat.com", custom_domain = true, zone_name = "marshmallowmeat.com" },
+  # { pattern = "dev.marshmallowmeat.com/*", zone_name = "marshmallowmeat.com" }
+]
+# local_upstream = { host = "localhost", port = 3000 }

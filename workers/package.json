@@ -1,0 +1,22 @@
+{
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "deploy": "wrangler publish src/index.ts",
+    "build": "wrangler publish src/index.ts --dry-run --outdir=dist",
+    "build-ci": "wrangler publish src/index.ts --dry-run --outdir=dist",
+    "dev": "wrangler dev src/index.ts --local",
+    "test": "vitest",
+    "start-stackblitz": "WRANGLER_SEND_METRICS=false wrangler dev src/index.ts --local"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "4",
+    "@types/jest": "29.4.0",
+    "vitest": "^0.24.5",
+    "wrangler": "^2.1.14"
+  },
+  "dependencies": {
+    "ipaddr.js": "^2.0.1"
+  }
+}
