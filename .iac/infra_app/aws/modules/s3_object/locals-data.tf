@@ -45,6 +45,9 @@ locals {
     filename => filemd5("${local.base_folder_path}/${filename}")
   }
   mime_types = jsondecode(file("${path.module}/mime.json"))
+  files_with_no_extension = [
+    "_headers"
+  ]
 
   module_depends_on = [var.module_depends_on]
 

@@ -32,7 +32,7 @@ resource "aws_s3_bucket_object" "this" {
   key          = each.key
   source       = "${local.base_folder_path}/${each.key}"
   source_hash  = local.file_hashes[each.key]
-  content_type = lookup(local.mime_types, regex("\\.[^.]+$", each.key), null)
+  content_type = contains(local.files_with_no_extension, each.key) ? "text/plain" : lookup(local.mime_types, regex("\\.[^.]+$", each.key), null)
   # content_type = data.external.get_mime[each.key].result.mime
   # content_type = var.set_auto_content_type ? length(regexall("^.*\\.(.*)", each.value)) > 0 ? lookup(local.extension_to_mime, element(regex("^.*\\.(.*)", each.value), 0), null) : null : var.content_type
   depends_on = [local.module_depends_on]

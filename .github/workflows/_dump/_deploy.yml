@@ -221,3 +221,19 @@ jobs:
       # github.event.pull_request.base.ref == 'uat'
       # github.event_name == 'push' &&
     # if: github.event.pull_request.merged == true
+
+
+  # if [[ $has_build == 'false' ]]; then
+  #   echo "No build artifact specified. Skipping plan."
+  #   exit 78
+  # fi
+  # build-title:
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     plan-title: ${{ steps.check-tag.outputs.has_tag }}
+  #   steps:
+  #     - name: Build Plan Title
+  #       id: plan-title
+  #       run: |
+  #         plan_title="AWS ${{ inputs.gh_environment }} Deploy Plan"
+  #         echo "plan_title=$has_tag" >> $GITHUB_OUTPUT
