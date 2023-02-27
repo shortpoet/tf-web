@@ -25,7 +25,7 @@ useHead({
     },
     {
       rel: 'canonical',
-      href: computed(() => window.location.href),
+      href: computed(() => import.meta.env.BASE_URL),
     }
   ],
 })
