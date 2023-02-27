@@ -13,4 +13,5 @@ module "cloudflare_dev" {
   worker_script_name     = "tf-web-test"
   worker_script_path     = "${path.module}/../../../../../workers/dist/index.js"
   worker_script_root_dir = "${path.module}/../../../../../workers"
+  build_cicd             = var.build_cicd
 }
