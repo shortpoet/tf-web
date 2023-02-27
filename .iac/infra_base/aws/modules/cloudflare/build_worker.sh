@@ -9,7 +9,8 @@ set -e
 # and escaped for consumption by the shell.
  eval "$(jq -r '@sh "WORKER_SCRIPT_PATH=\(.worker_script_path)"')"
 
-npm run build > /dev/null
+pnpm install > /dev/null
+pnpm run build > /dev/null
 
 # Safely produce a JSON object containing the result value.
 # jq will ensure that the value is properly quoted
