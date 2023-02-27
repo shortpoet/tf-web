@@ -127,7 +127,7 @@ jobs:
 
       - name: Upload build
         id: upload-build
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.build-artifact-uuid.outputs.BUILD_ARTIFACT_UUID }}
           path: "${{ env.APP_DIR }}/${{ env.BUILD_DIR }}/${{ env.BUILD_ARTIFACT }}.zip"
