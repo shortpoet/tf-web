@@ -93,7 +93,7 @@ jobs:
             echo "BUILD_ARTIFACT_UUID=${BUILD_ARTIFACT_UUID}" >> $GITHUB_OUTPUT
             echo "ENV=development" >> $GITHUB_ENV
           elif [ "$IS_MAIN" = true ]; then
-            echo "BUILD_ARTIFACT_UUID=${BUILD_ARTIFACT_UUID}" >> $GITHUB_OUTPUT
+            echo "BUILD_ARTIFACT_UUID=${BUILD_ARTIFACT_UUID_UAT}" >> $GITHUB_OUTPUT
             echo "ENV=uat" >> $GITHUB_ENV
           elif [ "$IS_RELEASE" = 'true && true' ]; then
             echo "BUILD_ARTIFACT_UUID=${BUILD_ARTIFACT_UUID}" >> $GITHUB_OUTPUT
