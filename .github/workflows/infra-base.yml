@@ -72,10 +72,9 @@ jobs:
   build-node:
     runs-on: ubuntu-latest
     needs: paths-filter
-    if: false
-    # if: |
-    #   needs.paths-filter.outputs.infra_base == 'true' ||
-    #   github.event_name == 'release'
+    if: |
+      needs.paths-filter.outputs.infra_base == 'true' ||
+      github.event_name == 'release'
     outputs:
       build-artifact-uuid: ${{ steps.build-artifact-uuid.outputs.BUILD_ARTIFACT_UUID }}
     steps:
