@@ -135,6 +135,7 @@ jobs:
   deploy:
     uses: shortpoet/.github/.github/workflows/deploy-dev_push-uat_merge-prod_release.yml@main
     secrets: inherit
+    # needs: [paths-filter]
     needs: [paths-filter, build-node]
     # can't seem to use if release here because of needs
     if: |
@@ -144,6 +145,6 @@ jobs:
       base_path: .iac/infra_base/aws
       infra_type: Base
       provider: aws
-      build_path: "workers/dist"
-      build_artifact: "dist"
-      build_artifact_uuid: ${{ needs.build-node.outputs.build-artifact-uuid }}
+      # build_path: "workers/dist"
+      # build_artifact: "dist"
+      # build_artifact_uuid: ${{ needs.build-node.outputs.build-artifact-uuid }}
