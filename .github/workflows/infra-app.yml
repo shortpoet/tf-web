@@ -93,7 +93,7 @@ jobs:
             echo "BUILD_ARTIFACT_UUID=${BUILD_ARTIFACT_UUID}" >> $GITHUB_OUTPUT
             echo "ENV=development" >> $GITHUB_ENV
           elif [ "$IS_MAIN" = true ]; then
-            echo "BUILD_ARTIFACT_UUID=${BUILD_ARTIFACT_UUID_UAT}" >> $GITHUB_OUTPUT
+            echo "BUILD_ARTIFACT_UUID=${BUILD_ARTIFACT_UUID}" >> $GITHUB_OUTPUT
             echo "ENV=uat" >> $GITHUB_ENV
           elif [ "$IS_RELEASE" = 'true && true' ]; then
             echo "BUILD_ARTIFACT_UUID=${BUILD_ARTIFACT_UUID}" >> $GITHUB_OUTPUT
@@ -104,27 +104,32 @@ jobs:
           fi
 
       - uses: actions/setup-node@v3
+        if: ${{ github.ref != 'refs/heads/main' }}
         with:
           node-version: latest
 
       - name: Install dependencies
+        if: ${{ github.ref != 'refs/heads/main' }}
         working-directory: app
         run: |
           npm install --global vite pnpm
           pnpm i
 
       - name: Build
+        if: ${{ github.ref != 'refs/heads/main' }}
         working-directory: app
         run: |
           pnpm run build-ci --mode $ENV
 
       - name: Compress build
+        if: ${{ github.ref != 'refs/heads/main' }}
         working-directory: app
         run: |
           cd ${{ env.BUILD_DIR }}
           zip -r ${{ env.BUILD_ARTIFACT }}.zip ./*
 
       - name: Upload build
+        if: ${{ github.ref != 'refs/heads/main' }}
         id: upload-build
         uses: actions/upload-artifact@v3
         with:
