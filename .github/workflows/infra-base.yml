@@ -147,6 +147,6 @@ jobs:
       infra_type: Base
       provider: aws
       module_org: shortpoet-cloud
-      # build_path: "workers/dist"
-      # build_artifact: "dist"
-      # build_artifact_uuid: ${{ needs.build-node.outputs.build-artifact-uuid }}
+      build_path: "workers/dist"
+      build_artifact: "dist"
+      build_artifact_uuid: ${{ needs.build-node.outputs.build-artifact-uuid }}
