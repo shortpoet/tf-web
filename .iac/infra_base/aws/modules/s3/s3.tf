@@ -1,6 +1,6 @@
 data "cloudflare_ip_ranges" "cloudflare" {}
 data "aws_canonical_user_id" "current" {}
-data "aws_caller_identity" "current" {}
+# data "aws_caller_identity" "current" {}
 data "aws_iam_role" "terraform_admin" {
   name = "terraform-admin"
 }
@@ -8,7 +8,7 @@ data "aws_iam_user" "admin" {
   user_name = "Administrator"
 }
 locals {
-  caller_arn           = "arn:aws:iam::${data.aws_caller_identity.current.account_id}"
+  # caller_arn           = "arn:aws:iam::${data.aws_caller_identity.current.account_id}"
   cloudflare_ip_ranges = concat(data.cloudflare_ip_ranges.cloudflare.ipv4_cidr_blocks, data.cloudflare_ip_ranges.cloudflare.ipv6_cidr_blocks)
   tags = merge(
     {
@@ -166,7 +166,7 @@ locals {
     Effect = "Deny"
     Action = "s3:*"
     Resource = [
-      "${aws_s3_bucket.site.arn}",
+      aws_s3_bucket.site.arn,
       "${aws_s3_bucket.site.arn}/*",
     ]
     # NotPrincipal = {

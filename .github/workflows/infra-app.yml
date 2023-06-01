@@ -137,7 +137,8 @@ jobs:
           path: "${{ env.APP_DIR }}/${{ env.BUILD_DIR }}/${{ env.BUILD_ARTIFACT }}.zip"
 
   deploy:
-    uses: shortpoet/.github/.github/workflows/deploy-dev_push-uat_merge-prod_release.yml@main
+    uses: shortpoet/.github/.github/workflows/deploy-dev_push-uat_merge-prod_release.yml@develop
+    # uses: shortpoet/.github/.github/workflows/deploy-dev_push-uat_merge-prod_release.yml@main
     secrets: inherit
     needs: [paths-filter, build-node]
     # can't seem to use if release here because of needs
@@ -151,3 +152,4 @@ jobs:
       build_path: "app/build"
       build_artifact: "build"
       build_artifact_uuid: ${{ needs.build-node.outputs.build-artifact-uuid }}
+      module_org: shortpoet-cloud
