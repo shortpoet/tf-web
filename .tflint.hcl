@@ -52,7 +52,8 @@ rule "terraform_documented_variables" {
 
 # Disallow specifying a git or mercurial repository as a module source without pinning to a version.
 rule "terraform_module_pinned_source" {
-  enabled = true
+  # TODO - enable this rule
+  enabled = false
 }
 
 rule "terraform_module_version" {

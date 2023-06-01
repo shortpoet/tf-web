@@ -1,5 +1,7 @@
 module "s3_root" {
-  source                  = "../../modules/s3"
+  # source                  = "../../modules/s3"
+  # source                  = "../../../../../../../sp-cloud/tf-aws-website/modules/s3_bucket"
+  source                  = "git@github.com:shortpoet-cloud/tf-aws-website.git//modules/s3_bucket?ref=develop"
   site_domain_bucket_name = local.site_domain_root
   tags                    = local.tags
 }
@@ -12,7 +14,9 @@ module "cloudflare_root" {
 }
 
 module "s3_root_www" {
-  source                   = "../../modules/s3"
+  # source                  = "../../modules/s3"
+  # source                  = "../../../../../../../sp-cloud/tf-aws-website/modules/s3_bucket"
+  source                   = "git@github.com:shortpoet-cloud/tf-aws-website.git//modules/s3_bucket?ref=develop"
   site_domain_bucket_name  = "www.${local.site_domain_root}"
   redirect_all_requests_to = local.site_domain_root
   tags                     = local.tags
