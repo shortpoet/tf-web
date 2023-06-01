@@ -133,7 +133,8 @@ jobs:
           path: "${{ env.APP_DIR }}/${{ env.BUILD_DIR }}/${{ env.BUILD_ARTIFACT }}.zip"
 
   deploy:
-    uses: shortpoet/.github/.github/workflows/deploy-dev_push-uat_merge-prod_release.yml@main
+    uses: shortpoet/.github/.github/workflows/deploy-dev_push-uat_merge-prod_release.yml@develop
+    # uses: shortpoet/.github/.github/workflows/deploy-dev_push-uat_merge-prod_release.yml@main
     secrets: inherit
     # needs: [paths-filter]
     needs: [paths-filter, build-node]
@@ -145,6 +146,7 @@ jobs:
       base_path: .iac/infra_base/aws
       infra_type: Base
       provider: aws
+      module_org: shortpoet-cloud
       # build_path: "workers/dist"
       # build_artifact: "dist"
       # build_artifact_uuid: ${{ needs.build-node.outputs.build-artifact-uuid }}
