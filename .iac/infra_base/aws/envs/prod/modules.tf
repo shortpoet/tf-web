@@ -7,7 +7,9 @@ module "s3_root" {
 }
 
 module "cloudflare_root" {
-  source               = "../../modules/cloudflare"
+  # source               = "../../modules/cloudflare"
+  # source = "../../../../../../../sp-cloud/tf-cloudflare/modules/record"
+  source               = "git@github.com:shortpoet-cloud/tf-cloudflare.git//modules/record?ref=develop"
   zone_name            = local.zone_name
   cname_name           = local.site_domain_root
   cname_value_endpoint = module.s3_root.website_endpoint
@@ -23,7 +25,9 @@ module "s3_root_www" {
 }
 
 module "cloudflare_root_www" {
-  source               = "../../modules/cloudflare"
+  # source               = "../../modules/cloudflare"
+  # source = "../../../../../../../sp-cloud/tf-cloudflare/modules/record"
+  source               = "git@github.com:shortpoet-cloud/tf-cloudflare.git//modules/record?ref=develop"
   zone_name            = local.zone_name
   cname_name           = "www"
   cname_value_endpoint = local.site_domain_root

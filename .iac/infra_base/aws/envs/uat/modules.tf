@@ -7,7 +7,9 @@ module "s3_uat" {
 }
 
 module "cloudflare_uat" {
-  source               = "../../modules/cloudflare"
+  # source               = "../../modules/cloudflare"
+  # source = "../../../../../../../sp-cloud/tf-cloudflare/modules/record"
+  source               = "git@github.com:shortpoet-cloud/tf-cloudflare.git//modules/record?ref=develop"
   zone_name            = local.zone_name
   cname_name           = local.subdomain_uat
   cname_value_endpoint = module.s3_uat.website_endpoint
